@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统公告 - 宿舍考勤与管理系统</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">宿舍考勤系统</div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-title">公共功能</div>
+            <a href="student/index.html" class="nav-item">学生首页</a>
+            <a href="student/checkin.html" class="nav-item">考勤签到</a>
+            <a href="student/leave.html" class="nav-item">请假申请</a>
+            <a href="student/records.html" class="nav-item">考勤记录</a>
+            <a href="announcements.html" class="nav-item active">系统公告</a>
+            <div class="nav-group-title">快捷导航</div>
+            <a href="index.html" class="nav-item">全部页面</a>
+            <a href="admin/index.html" class="nav-item">管理员首页</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <span class="topbar-title">系统公告</span>
+            <div class="topbar-user">
+                <span>演示账号</span>
+                <div class="avatar">演</div>
+                <a href="#" data-action="logout">退出登录</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="alert alert-info">静态原型演示 · 数据为示例，后续对接后端</div>
+            <div class="page-header">
+                <h2>公告通知</h2>
+                <p>查看学校及宿舍管理相关通知</p>
+            </div>
+
+            <!-- 后续接入：GET /api/announcements/list -->
+            <div class="card">
+                <div class="announcement-item">
+                    <h4>关于 2026 年端午节期间宿舍管理的通知</h4>
+                    <div class="meta">发布部门：学生科 · 2026-06-05 · <span class="badge badge-danger">重要</span></div>
+                    <p>端午节期间（6月8日-6月10日），宿舍门禁时间调整为 23:30。需要外宿的同学请提前在系统提交请假申请，经辅导员审批后方可外宿。</p>
+                </div>
+
+                <div class="announcement-item">
+                    <h4>期末期间加强晚查寝通知</h4>
+                    <div class="meta">发布部门：宿管中心 · 2026-06-01</div>
+                    <p>期末复习期间，请同学们按时归寝，22:00-23:00 为正常签到时段。无故缺勤将通报至各学院。</p>
+                </div>
+
+                <div class="announcement-item">
+                    <h4>宿舍考勤系统上线公告</h4>
+                    <div class="meta">发布部门：信息中心 · 2026-05-20</div>
+                    <p>宿舍考勤与管理系统正式上线，请全体住宿同学每日按时完成系统签到。如有问题请联系宿管办公室。</p>
+                </div>
+            </div>
+
+            <!-- 管理员可见：发布公告表单，后续接入 POST /api/announcements/create -->
+            <div class="card" style="margin-top:16px;">
+                <div class="card-title">发布公告（管理员功能预览）</div>
+                <form id="announceForm" action="/api/announcements/create" method="post">
+                    <div class="form-group">
+                        <label>公告标题</label>
+                        <input type="text" name="title" class="form-control" placeholder="请输入公告标题">
+                    </div>
+                    <div class="form-group">
+                        <label>公告内容</label>
+                        <textarea name="content" class="form-control" placeholder="请输入公告内容"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">发布（原型）</button>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+    bindPrototypeForm('announceForm', '【原型提示】公告内容已填写。接入后端后 POST /api/announcements/create 发布。');
+</script>
+</body>
+</html>

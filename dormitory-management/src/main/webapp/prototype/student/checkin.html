@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>考勤签到 - 宿舍考勤与管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">宿舍考勤系统</div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-title">学生功能</div>
+            <a href="index.html" class="nav-item">首页概览</a>
+            <a href="checkin.html" class="nav-item active">考勤签到</a>
+            <a href="leave.html" class="nav-item">请假申请</a>
+            <a href="records.html" class="nav-item">考勤记录</a>
+            <a href="../announcements.html" class="nav-item">系统公告</a>
+            <div class="nav-group-title">快捷导航</div>
+            <a href="../index.html" class="nav-item">全部页面</a>
+            <a href="../admin/index.html" class="nav-item">管理员首页</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <span class="topbar-title">考勤签到</span>
+            <div class="topbar-user">
+                <span>张三 · 302宿舍</span>
+                <div class="avatar">张</div>
+                <a href="#" data-action="logout">退出登录</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="alert alert-info">静态原型演示 · 数据为示例，后续对接后端</div>
+            <div class="page-header">
+                <h2>每日考勤签到</h2>
+                <p>请在规定时段内完成签到，签到时间：22:00 - 23:00</p>
+            </div>
+
+            <div class="card">
+                <div class="checkin-box">
+                    <div class="checkin-date" id="checkinDate">加载中...</div>
+                    <div class="checkin-time" id="checkinClock">--:--:--</div>
+                    <div class="checkin-status pending" id="checkinStatus">今日未签到</div>
+
+                    <!-- 后续接入：POST /api/attendance/checkin -->
+                    <button id="checkinBtn" class="btn btn-primary" style="padding:12px 48px;font-size:16px;">
+                        立即签到
+                    </button>
+
+                    <p class="tip" style="margin-top:20px;color:#64748b;font-size:13px;">
+                        签到地点：3号楼302室 · 系统自动记录签到时间
+                    </p>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                温馨提示：超过 23:00 未签到将记为缺勤，如有特殊情况请提前提交请假申请。
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="../js/common.js"></script>
+<script>
+    startClock('checkinClock', 'checkinDate');
+    bindCheckinBtn('checkinBtn');
+</script>
+</body>
+</html>

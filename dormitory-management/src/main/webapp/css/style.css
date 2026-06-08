@@ -1,0 +1,140 @@
+/* 全局样式：宿舍考勤与管理系统 */
+
+/* 重置默认边距，统一盒模型 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Microsoft YaHei", Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+/* 登录/注册页居中卡片容器 */
+.container {
+    width: 420px;
+    margin: 80px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #2c3e50;
+}
+
+/* 表单每一行的间距 */
+.form-group {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #409eff;
+}
+
+/* 主按钮：登录/注册提交 */
+.btn {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #409eff;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #66b1ff;
+}
+
+/* 页面底部文字链接，如"去注册" */
+.btn-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    color: #409eff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* LoginServlet 转发回来的错误提示文字 */
+.error-msg {
+    color: #f56c6c;
+    font-size: 13px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+/* ===== 首页样式 ===== */
+
+/* 顶部蓝色导航栏 */
+.header {
+    background: #409eff;
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 20px;
+}
+
+.header a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* 首页主内容区域 */
+.main {
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* 首页信息卡片 */
+.card {
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card p {
+    line-height: 1.8;
+    font-size: 15px;
+}
+
+/* 灰色辅助说明文字 */
+.tip {
+    margin-top: 16px;
+    color: #909399;
+    font-size: 13px;
+}

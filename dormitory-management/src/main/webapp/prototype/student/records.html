@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>考勤记录 - 宿舍考勤与管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">宿舍考勤系统</div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-title">学生功能</div>
+            <a href="index.html" class="nav-item">首页概览</a>
+            <a href="checkin.html" class="nav-item">考勤签到</a>
+            <a href="leave.html" class="nav-item">请假申请</a>
+            <a href="records.html" class="nav-item active">考勤记录</a>
+            <a href="../announcements.html" class="nav-item">系统公告</a>
+            <div class="nav-group-title">快捷导航</div>
+            <a href="../index.html" class="nav-item">全部页面</a>
+            <a href="../admin/index.html" class="nav-item">管理员首页</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <span class="topbar-title">考勤记录</span>
+            <div class="topbar-user">
+                <span>张三 · 302宿舍</span>
+                <div class="avatar">张</div>
+                <a href="#" data-action="logout">退出登录</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="alert alert-info">静态原型演示 · 数据为示例，后续对接后端</div>
+            <div class="page-header">
+                <h2>我的考勤记录</h2>
+                <p>查看历史签到与缺勤情况</p>
+            </div>
+
+            <div class="card">
+                <!-- 后续接入：GET /api/attendance/records?month=2026-06 -->
+                <form id="searchForm" action="/api/attendance/records" method="get"
+                      style="display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;">
+                    <div class="form-group" style="margin-bottom:0;flex:1;">
+                        <label>查询月份</label>
+                        <input type="month" name="month" class="form-control" value="2026-06">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;flex:1;">
+                        <label>考勤状态</label>
+                        <select name="status" class="form-control">
+                            <option value="">全部</option>
+                            <option value="normal">正常</option>
+                            <option value="late">迟到</option>
+                            <option value="absent">缺勤</option>
+                            <option value="leave">请假</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">查 询</button>
+                </form>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>签到时间</th>
+                            <th>状态</th>
+                            <th>备注</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>2026-06-07</td>
+                            <td>22:15:32</td>
+                            <td><span class="badge badge-success">正常</span></td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-06</td>
+                            <td>22:48:10</td>
+                            <td><span class="badge badge-warning">迟到</span></td>
+                            <td>超过规定时段</td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-05</td>
+                            <td>—</td>
+                            <td><span class="badge badge-info">请假</span></td>
+                            <td>晚归请假已通过</td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-04</td>
+                            <td>—</td>
+                            <td><span class="badge badge-danger">缺勤</span></td>
+                            <td>未签到</td>
+                        </tr>
+                        <tr>
+                            <td>2026-06-03</td>
+                            <td>22:05:18</td>
+                            <td><span class="badge badge-success">正常</span></td>
+                            <td>—</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="../js/common.js"></script>
+<script>
+    bindPrototypeForm('searchForm', '【原型提示】查询条件已选择。接入后端后 GET /api/attendance/records 返回数据。');
+</script>
+</body>
+</html>

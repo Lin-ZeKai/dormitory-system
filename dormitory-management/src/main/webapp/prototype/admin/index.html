@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员首页 - 宿舍考勤与管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">宿舍考勤系统</div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-title">管理功能</div>
+            <a href="index.html" class="nav-item active">数据概览</a>
+            <a href="../announcements.html" class="nav-item">公告管理</a>
+            <div class="nav-group-title">快捷导航</div>
+            <a href="../index.html" class="nav-item">全部页面</a>
+            <a href="../student/index.html" class="nav-item">学生首页</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <span class="topbar-title">管理员首页</span>
+            <div class="topbar-user">
+                <span>管理员 · admin</span>
+                <div class="avatar">管</div>
+                <a href="#" data-action="logout">退出登录</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="alert alert-info">静态原型演示 · 数据为示例，后续对接后端</div>
+            <div class="page-header">
+                <h2>管理数据概览</h2>
+                <p>宿舍考勤与管理系统后台管理面板</p>
+            </div>
+
+            <!-- 后续接入：GET /api/admin/dashboard -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">注册学生</div>
+                    <div class="value">1,286</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">今日已签到</div>
+                    <div class="value">1,102</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">今日缺勤</div>
+                    <div class="value">34</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">待审请假</div>
+                    <div class="value">12</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">今日考勤概况</div>
+                <div class="table-wrap">
+                    <!-- 后续接入：GET /api/admin/attendance/today -->
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>楼栋</th>
+                            <th>应到人数</th>
+                            <th>已签到</th>
+                            <th>缺勤</th>
+                            <th>出勤率</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1号楼</td>
+                            <td>320</td>
+                            <td>298</td>
+                            <td>22</td>
+                            <td><span class="badge badge-success">93.1%</span></td>
+                        </tr>
+                        <tr>
+                            <td>2号楼</td>
+                            <td>410</td>
+                            <td>385</td>
+                            <td>25</td>
+                            <td><span class="badge badge-success">93.9%</span></td>
+                        </tr>
+                        <tr>
+                            <td>3号楼</td>
+                            <td>556</td>
+                            <td>419</td>
+                            <td>137</td>
+                            <td><span class="badge badge-warning">75.4%</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">待处理事项</div>
+                <p>待审批请假：<strong>12</strong> 条</p>
+                <p style="margin-top:6px;">待发布公告：<strong>2</strong> 条</p>
+                <!-- 后续接入：跳转至对应管理页面 -->
+            </div>
+        </main>
+    </div>
+</div>
+<script src="../js/common.js"></script>
+</body>
+</html>

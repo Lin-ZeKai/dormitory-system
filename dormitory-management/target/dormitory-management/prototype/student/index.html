@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生首页 - 宿舍考勤与管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+<div class="layout">
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">宿舍考勤系统</div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-title">学生功能</div>
+            <a href="index.html" class="nav-item active">首页概览</a>
+            <a href="checkin.html" class="nav-item">考勤签到</a>
+            <a href="leave.html" class="nav-item">请假申请</a>
+            <a href="records.html" class="nav-item">考勤记录</a>
+            <a href="../announcements.html" class="nav-item">系统公告</a>
+            <div class="nav-group-title">快捷导航</div>
+            <a href="../index.html" class="nav-item">全部页面</a>
+            <a href="../admin/index.html" class="nav-item">管理员首页</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <span class="topbar-title">学生首页</span>
+            <div class="topbar-user">
+                <span>张三 · 302宿舍</span>
+                <div class="avatar">张</div>
+                <a href="#" data-action="logout">退出登录</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="alert alert-info">静态原型演示 · 数据为示例，后续对接后端</div>
+            <div class="page-header">
+                <h2>欢迎回来，张三</h2>
+                <p>今天是 2026年6月8日，请及时完成今日宿舍考勤签到</p>
+            </div>
+
+            <!-- 后续接入：GET /api/student/dashboard 获取统计数据 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">本月签到</div>
+                    <div class="value">22</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">缺勤次数</div>
+                    <div class="value">1</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">请假中</div>
+                    <div class="value">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">出勤率</div>
+                    <div class="value">96%</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">今日考勤状态</div>
+                <p>签到时段：22:00 - 23:00</p>
+                <p style="margin-top:8px;">
+                    当前状态：<span class="badge badge-warning">未签到</span>
+                </p>
+                <a href="checkin.html" class="btn btn-primary" style="margin-top:16px;">去签到</a>
+            </div>
+
+            <div class="card">
+                <div class="card-title">最新公告</div>
+                <!-- 后续接入：GET /api/announcements?limit=3 -->
+                <div class="announcement-item">
+                    <h4>关于端午节晚归登记的通知</h4>
+                    <div class="meta">2026-06-05 · 学生科</div>
+                    <p>节日期间需提前提交晚归申请……</p>
+                </div>
+                <a href="../announcements.html" class="btn-link">查看全部公告 →</a>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="../js/common.js"></script>
+</body>
+</html>

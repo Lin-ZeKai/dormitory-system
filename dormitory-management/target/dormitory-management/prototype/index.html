@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面导航 - 宿舍考勤与管理系统</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">宿舍考勤系统</div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-title">原型入口</div>
+            <a href="index.html" class="nav-item active">全部页面</a>
+            <a href="../login.jsp" class="nav-item">后端登录页</a>
+            <div class="nav-group-title">学生端</div>
+            <a href="student/index.html" class="nav-item">学生首页</a>
+            <a href="student/checkin.html" class="nav-item">考勤签到</a>
+            <a href="student/leave.html" class="nav-item">请假申请</a>
+            <a href="student/records.html" class="nav-item">考勤记录</a>
+            <div class="nav-group-title">管理端</div>
+            <a href="admin/index.html" class="nav-item">管理员首页</a>
+            <a href="announcements.html" class="nav-item">系统公告</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <span class="topbar-title">静态原型导航</span>
+            <div class="topbar-user">
+                <span>演示模式</span>
+                <a href="#" data-action="logout">退出登录</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2>全部静态页面</h2>
+                <p>当前为前端原型演示，数据均为示例。登录成功后 admin 进管理端，其他账号进学生端。</p>
+            </div>
+
+            <div class="alert alert-info">
+                提示：表单提交、签到等操作暂时只会弹出演示提示，后续再对接后端接口。
+            </div>
+
+            <div class="card">
+                <div class="card-title">学生端页面</div>
+                <p><a href="student/index.html">学生首页</a></p>
+                <p><a href="student/checkin.html">考勤签到</a></p>
+                <p><a href="student/leave.html">请假申请</a></p>
+                <p><a href="student/records.html">考勤记录</a></p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">管理端 & 公共页面</div>
+                <p><a href="admin/index.html">管理员首页</a></p>
+                <p><a href="announcements.html">系统公告</a></p>
+                <p><a href="register.html">注册页（原型）</a></p>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="js/common.js"></script>
+</body>
+</html>

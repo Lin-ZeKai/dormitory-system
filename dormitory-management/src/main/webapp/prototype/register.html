@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 宿舍考勤与管理系统</title>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body class="auth-page">
+
+<div class="auth-card">
+    <div class="auth-logo">
+        <h1>用户注册</h1>
+        <p>创建您的系统账号</p>
+    </div>
+
+    <!-- 后续接入：POST /register  由 RegisterServlet 处理 -->
+    <form id="registerForm" action="/register" method="post">
+        <div class="form-group">
+            <label for="username">用户名 <span class="required">*</span></label>
+            <input type="text" id="username" name="username" class="form-control"
+                   placeholder="学号，作为登录账号" required>
+        </div>
+        <div class="form-group">
+            <label for="realName">真实姓名 <span class="required">*</span></label>
+            <input type="text" id="realName" name="realName" class="form-control"
+                   placeholder="请输入真实姓名" required>
+        </div>
+        <div class="form-group">
+            <label for="password">密码 <span class="required">*</span></label>
+            <input type="password" id="password" name="password" class="form-control"
+                   placeholder="至少 6 位" required>
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">确认密码 <span class="required">*</span></label>
+            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+                   placeholder="再次输入密码" required>
+        </div>
+        <div class="form-group">
+            <label for="dormNo">宿舍号</label>
+            <input type="text" id="dormNo" name="dormNo" class="form-control"
+                   placeholder="如：3号楼 302">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">注 册</button>
+    </form>
+
+    <div class="auth-footer">
+        已有账号？<a href="../login.jsp">返回登录</a>
+    </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+    bindPrototypeForm('registerForm', '【原型提示】注册信息已填写。接入后端后 POST /register 写入数据库。');
+</script>
+</body>
+</html>

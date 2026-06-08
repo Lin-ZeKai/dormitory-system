@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>请假申请 - 宿舍考勤与管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-brand">宿舍考勤系统</div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-title">学生功能</div>
+            <a href="index.html" class="nav-item">首页概览</a>
+            <a href="checkin.html" class="nav-item">考勤签到</a>
+            <a href="leave.html" class="nav-item active">请假申请</a>
+            <a href="records.html" class="nav-item">考勤记录</a>
+            <a href="../announcements.html" class="nav-item">系统公告</a>
+            <div class="nav-group-title">快捷导航</div>
+            <a href="../index.html" class="nav-item">全部页面</a>
+            <a href="../admin/index.html" class="nav-item">管理员首页</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <span class="topbar-title">请假申请</span>
+            <div class="topbar-user">
+                <span>张三 · 302宿舍</span>
+                <div class="avatar">张</div>
+                <a href="#" data-action="logout">退出登录</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="alert alert-info">静态原型演示 · 数据为示例，后续对接后端</div>
+            <div class="page-header">
+                <h2>提交请假申请</h2>
+                <p>无法按时归寝时，请提前填写并提交请假申请</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">填写请假信息</div>
+                <!-- 后续接入：POST /api/leave/apply -->
+                <form id="leaveForm" action="/api/leave/apply" method="post">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>请假类型 <span class="required">*</span></label>
+                            <select name="leaveType" class="form-control" required>
+                                <option value="">请选择</option>
+                                <option value="late">晚归</option>
+                                <option value="overnight">外宿</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>联系电话 <span class="required">*</span></label>
+                            <input type="text" name="phone" class="form-control"
+                                   placeholder="请输入手机号" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>开始时间 <span class="required">*</span></label>
+                            <input type="datetime-local" name="startTime" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>结束时间 <span class="required">*</span></label>
+                            <input type="datetime-local" name="endTime" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>请假原因 <span class="required">*</span></label>
+                        <textarea name="reason" class="form-control"
+                                  placeholder="请详细说明请假原因" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">提交申请</button>
+                    <button type="reset" class="btn btn-outline" style="margin-left:8px;">重置</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">我的请假记录</div>
+                <!-- 后续接入：GET /api/leave/my-list -->
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>时间段</th>
+                            <th>状态</th>
+                            <th>提交时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>晚归</td>
+                            <td>2026-06-05 22:00 ~ 23:30</td>
+                            <td><span class="badge badge-success">已通过</span></td>
+                            <td>2026-06-05 18:20</td>
+                        </tr>
+                        <tr>
+                            <td>外宿</td>
+                            <td>2026-05-20 ~ 2026-05-21</td>
+                            <td><span class="badge badge-warning">待审批</span></td>
+                            <td>2026-05-19 10:15</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="../js/common.js"></script>
+<script>
+    bindPrototypeForm('leaveForm', '【原型提示】请假申请已填写。接入后端后 POST /api/leave/apply 提交。');
+</script>
+</body>
+</html>
