@@ -47,6 +47,7 @@ public class LeaveServlet extends HttpServlet {
         String startTimeStr = req.getParameter("startTime");
         String endTimeStr = req.getParameter("endTime");
         String reason = req.getParameter("reason");
+        String resubmitIdStr = req.getParameter("resubmitId");
 
         if (isEmpty(leaveType) || isEmpty(phone) || isEmpty(startTimeStr)
                 || isEmpty(endTimeStr) || isEmpty(reason)) {
@@ -56,13 +57,7 @@ public class LeaveServlet extends HttpServlet {
         }
 
         try {
-            Leave leave = new Leave();
-            leave.setUserId(user.getId());
-            leave.setLeaveType(leaveType);
-            leave.setPhone(phone.trim());
-            leave.setStartTime(dateTimeFormat.parse(startTimeStr));
-            leave.setEndTime(dateTimeFormat.parse(endTimeStr));
-            leave.setReason(reason.trim());
+            Leave leave = buildLeave(user.getId(), leaveType, phone, startTimeStr, endTimeStr, reason);
 
             if (leave.getEndTime().before(leave.getStartTime())) {
                 req.setAttribute("errorMsg", "结束时间不能早于开始时间");
@@ -70,13 +65,45 @@ public class LeaveServlet extends HttpServlet {
                 return;
             }
 
-            leaveDao.insert(leave);
-            req.setAttribute("successMsg", "请假申请已提交，等待审批");
+            boolean success;
+            if (!isEmpty(resubmitIdStr)) {
+                success = leaveDao.resubmitLeave(Integer.parseInt(resubmitIdStr), user.getId(), leave);
+                req.setAttribute("successMsg", success ? "已重新提交，等待审批" : "重新提交失败，请确认记录状态");
+            } else {
+                Leave pending = leaveDao.findPendingByUserId(user.getId());
+                if (pending != null) {
+                    success = leaveDao.updatePendingLeave(pending.getId(), leave);
+                    req.setAttribute("successMsg", success ? "待审请假已更新" : "更新失败");
+                } else {
+                    Leave rejected = leaveDao.findLatestRejectedByUserId(user.getId());
+                    if (rejected != null) {
+                        success = leaveDao.resubmitLeave(rejected.getId(), user.getId(), leave);
+                        req.setAttribute("successMsg", success ? "已重新提交，等待审批" : "重新提交失败");
+                    } else {
+                        success = leaveDao.insert(leave);
+                        req.setAttribute("successMsg", success ? "请假申请已提交，等待审批" : "提交失败");
+                    }
+                }
+            }
         } catch (ParseException e) {
             req.setAttribute("errorMsg", "时间格式不正确");
+        } catch (NumberFormatException e) {
+            req.setAttribute("errorMsg", "重新提交参数无效");
         }
 
         doGet(req, resp);
+    }
+
+    private Leave buildLeave(int userId, String leaveType, String phone, String startTimeStr,
+                             String endTimeStr, String reason) throws ParseException {
+        Leave leave = new Leave();
+        leave.setUserId(userId);
+        leave.setLeaveType(leaveType.trim());
+        leave.setPhone(phone.trim());
+        leave.setStartTime(dateTimeFormat.parse(startTimeStr));
+        leave.setEndTime(dateTimeFormat.parse(endTimeStr));
+        leave.setReason(reason.trim());
+        return leave;
     }
 
     private boolean isEmpty(String value) {

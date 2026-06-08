@@ -60,13 +60,28 @@ public class AdminHomeServlet extends HttpServlet {
         }
 
         String action = req.getParameter("action");
-        if ("approveLeave".equals(action)) {
+        try {
             int leaveId = Integer.parseInt(req.getParameter("leaveId"));
-            leaveDao.updateStatus(leaveId, "approved");
-        } else if ("rejectLeave".equals(action)) {
-            int leaveId = Integer.parseInt(req.getParameter("leaveId"));
-            leaveDao.updateStatus(leaveId, "rejected");
+            if ("approveLeave".equals(action)) {
+                if (leaveDao.approveLeave(leaveId)) {
+                    req.getSession().setAttribute("flashMsg", "审批通过");
+                } else {
+                    req.getSession().setAttribute("flashMsg", "审批失败，记录可能已处理");
+                }
+            } else if ("rejectLeave".equals(action)) {
+                String rejectReason = req.getParameter("rejectReason");
+                if (rejectReason == null || rejectReason.trim().isEmpty()) {
+                    req.getSession().setAttribute("flashMsg", "请填写拒绝原因");
+                } else if (leaveDao.rejectLeave(leaveId, rejectReason.trim())) {
+                    req.getSession().setAttribute("flashMsg", "已拒绝并通知学生");
+                } else {
+                    req.getSession().setAttribute("flashMsg", "拒绝失败，记录可能已处理");
+                }
+            }
+        } catch (NumberFormatException e) {
+            req.getSession().setAttribute("flashMsg", "参数错误");
         }
+
         resp.sendRedirect(req.getContextPath() + "/admin/home");
     }
 }

@@ -51,7 +51,7 @@
             </div>
             <div class="card">
                 <div class="card-title">今日考勤状态</div>
-                <p>签到时段：22:00 - 23:00</p>
+                <p>签到时段：8:20-20:00</p>
                 <p style="margin-top:8px;">当前状态：
                     <% if (todayAttendance != null) { %>
                     <span class="badge badge-success">已签到</span>（<%= sdf.format(todayAttendance.getCheckTime()) %>）

@@ -43,6 +43,9 @@
                                 <option value="">请选择</option>
                                 <option value="late">晚归</option>
                                 <option value="overnight">外宿</option>
+                                <option value="sick">病假</option>
+                                <option value="public">公假</option>
+                                <option value="event">事假</option>
                                 <option value="other">其他</option>
                             </select>
                         </div>

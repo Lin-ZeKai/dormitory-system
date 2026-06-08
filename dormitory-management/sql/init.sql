@@ -28,15 +28,17 @@ CREATE TABLE IF NOT EXISTS t_attendance (
 
 -- 请假申请表
 CREATE TABLE IF NOT EXISTS t_leave (
-    id          INT PRIMARY KEY AUTO_INCREMENT,
-    user_id     INT NOT NULL,
-    leave_type  VARCHAR(20) NOT NULL COMMENT 'late/overnight/other',
-    phone       VARCHAR(20) NOT NULL,
-    start_time  DATETIME NOT NULL,
-    end_time    DATETIME NOT NULL,
-    reason      VARCHAR(500) NOT NULL,
-    status      VARCHAR(20) NOT NULL DEFAULT 'pending' COMMENT 'pending/approved/rejected',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    id            INT PRIMARY KEY AUTO_INCREMENT,
+    user_id       INT NOT NULL,
+    leave_type    VARCHAR(20) NOT NULL COMMENT 'late/overnight/sick/public/event/other',
+    phone         VARCHAR(20) NOT NULL,
+    start_time    DATETIME NOT NULL,
+    end_time      DATETIME NOT NULL,
+    reason        VARCHAR(500) NOT NULL,
+    status        VARCHAR(20) NOT NULL DEFAULT 'pending' COMMENT 'pending/approved/rejected',
+    reject_reason VARCHAR(500) DEFAULT NULL COMMENT '审批意见/拒绝原因',
+    audit_time    DATETIME DEFAULT NULL COMMENT '审批时间',
+    create_time   DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES t_user(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

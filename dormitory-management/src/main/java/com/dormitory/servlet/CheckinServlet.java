@@ -3,6 +3,7 @@ package com.dormitory.servlet;
 import com.dormitory.dao.AttendanceDao;
 import com.dormitory.entity.Attendance;
 import com.dormitory.entity.User;
+import com.dormitory.util.CheckinTimeUtil;
 import com.dormitory.util.WebUtil;
 
 import javax.servlet.ServletException;
@@ -11,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
 
 @WebServlet(name = "CheckinServlet", urlPatterns = "/student/checkin")
@@ -27,7 +27,16 @@ public class CheckinServlet extends HttpServlet {
             WebUtil.redirectLogin(req, resp);
             return;
         }
-        req.setAttribute("todayAttendance", attendanceDao.findTodayByUserId(user.getId()));
+
+        Attendance today = attendanceDao.findTodayByUserId(user.getId());
+        Date now = new Date();
+        boolean inWindow = CheckinTimeUtil.isWithinWindow(now);
+        boolean checkedIn = today != null;
+
+        req.setAttribute("todayAttendance", today);
+        req.setAttribute("inCheckinWindow", inWindow);
+        req.setAttribute("canCheckin", !checkedIn && inWindow);
+        req.setAttribute("checkinWindowText", CheckinTimeUtil.getWindowText());
         req.getRequestDispatcher("/student/checkin.jsp").forward(req, resp);
     }
 
@@ -47,11 +56,13 @@ public class CheckinServlet extends HttpServlet {
         }
 
         Date now = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(now);
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        String status = hour >= 23 ? "late" : "normal";
+        if (!CheckinTimeUtil.isWithinWindow(now)) {
+            req.setAttribute("errorMsg", "当前不在签到时段内（" + CheckinTimeUtil.getWindowText() + "），无法签到");
+            doGet(req, resp);
+            return;
+        }
 
+        String status = CheckinTimeUtil.resolveStatus(now);
         attendanceDao.checkIn(user.getId(), now, status);
         req.setAttribute("successMsg", "签到成功");
         doGet(req, resp);

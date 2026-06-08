@@ -15,6 +15,8 @@ public class Leave implements Serializable {
     private Date endTime;
     private String reason;
     private String status;
+    private String rejectReason;
+    private Date auditTime;
     private Date createTime;
     private String realName;
 
@@ -41,6 +43,12 @@ public class Leave implements Serializable {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getRejectReason() { return rejectReason; }
+    public void setRejectReason(String rejectReason) { this.rejectReason = rejectReason; }
+
+    public Date getAuditTime() { return auditTime; }
+    public void setAuditTime(Date auditTime) { this.auditTime = auditTime; }
 
     public Date getCreateTime() { return createTime; }
     public void setCreateTime(Date createTime) { this.createTime = createTime; }

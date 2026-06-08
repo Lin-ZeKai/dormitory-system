@@ -39,7 +39,7 @@
             <% } %>
             <div class="page-header">
                 <h2>每日考勤签到</h2>
-                <p>请在规定时段内完成签到，签到时间：22:00 - 23:00</p>
+                <p>签到时段：8:20-20:00</p>
             </div>
             <div class="card">
                 <div class="checkin-box">
