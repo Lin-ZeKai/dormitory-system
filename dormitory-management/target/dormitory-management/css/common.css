@@ -670,10 +670,11 @@ textarea.form-control {
     text-align: center;
 }
 
+/*  */
 .tab-panel {
     display: none;
 }
-
+/* 有active的展示，没有则隐藏 */
 .tab-panel.active {
     display: block;
 }
@@ -951,11 +952,20 @@ table tr:hover td {
     padding: 12px 24px 24px;
 }
 
-.modal-box p {
+.modal-box p,
+.modal-hint {
     color: var(--text-secondary);
     margin-bottom: 16px;
     font-size: 13px;
     line-height: 1.6;
+}
+
+.modal-hint {
+    padding: 10px 12px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    color: #0369a1;
 }
 
 .modal-actions {

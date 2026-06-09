@@ -130,13 +130,13 @@
             <button type="button" class="modal-close" id="rejectCloseBtn">&times;</button>
         </div>
         <div class="modal-body">
-            <p id="rejectStudentHint">请说明驳回理由，学生可在请假记录中查看。</p>
-            <form action="<%= ctx %>/admin/leaves" method="post" id="rejectForm">
+            <p id="rejectStudentHint" class="modal-hint">请说明驳回理由，学生可在请假记录中查看。</p>
+            <form action="<%= ctx %>/admin/leaves" method="post" id="rejectForm" novalidate>
                 <input type="hidden" name="action" value="rejectLeave">
                 <input type="hidden" name="leaveId" id="rejectLeaveId">
                 <div class="form-group">
                     <label>驳回原因 <span class="required">*</span></label>
-                    <textarea name="rejectReason" id="rejectReason" class="form-control" rows="4" required></textarea>
+                    <textarea name="rejectReason" id="rejectReason" class="form-control" rows="4" placeholder="例如：请假时间与课程冲突"></textarea>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-outline" id="rejectCancelBtn">取消</button>
@@ -147,6 +147,7 @@
     </div>
 </div>
 
+<script src="<%= ctx %>/js/message.js"></script>
 <script>
 (function () {
     var flash = document.getElementById('flashToast');
@@ -163,6 +164,7 @@
     });
 
     var modal = document.getElementById('rejectModal');
+    var rejectForm = document.getElementById('rejectForm');
     var leaveIdInput = document.getElementById('rejectLeaveId');
     var reasonInput = document.getElementById('rejectReason');
     var hint = document.getElementById('rejectStudentHint');
@@ -180,6 +182,26 @@
     document.getElementById('rejectCancelBtn').addEventListener('click', closeModal);
     document.getElementById('rejectCloseBtn').addEventListener('click', closeModal);
     modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+
+    rejectForm.addEventListener('submit', function (e) {
+        var reason = (reasonInput.value || '').trim();
+        if (!reason) {
+            e.preventDefault();
+            reasonInput.classList.add('is-invalid');
+            if (window.Message) {
+                Message.error('请填写驳回原因');
+            }
+            reasonInput.focus();
+            return;
+        }
+        reasonInput.classList.remove('is-invalid');
+    });
+
+    reasonInput.addEventListener('input', function () {
+        if (reasonInput.classList.contains('is-invalid') && reasonInput.value.trim()) {
+            reasonInput.classList.remove('is-invalid');
+        }
+    });
 })();
 </script>
 </body>

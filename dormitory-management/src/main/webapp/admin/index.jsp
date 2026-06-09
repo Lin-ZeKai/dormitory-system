@@ -57,6 +57,7 @@
                 <a href="<%= ctx %>/admin/announcements" class="quick-nav-card"><strong>公告管理</strong><span>发布、修改、删除公告</span></a>
                 <a href="<%= ctx %>/admin/stats" class="quick-nav-card"><strong>统计中心</strong><span>图表数据分析</span></a>
             </div>
+            <!-- 待审批请假和已审批请假 -->
             <div class="card leave-tabs-card">
                 <div class="tab-bar">
                     <button type="button" class="tab-btn active" data-tab="pending">
@@ -65,6 +66,7 @@
                     </button>
                     <button type="button" class="tab-btn" data-tab="audited">已审批请假</button>
                 </div>
+                <!-- id="tab-pending"：和按钮的 data-tab 对应，active：当前显示的标签 -->
                 <div class="tab-panel active" id="tab-pending">
                     <div class="table-wrap">
                         <table>
@@ -144,13 +146,13 @@
             <button type="button" class="modal-close" id="rejectCloseBtn" aria-label="关闭">&times;</button>
         </div>
         <div class="modal-body">
-            <p id="rejectStudentHint">请说明拒绝理由，学生可在请假记录中查看。</p>
-            <form action="<%= ctx %>/admin/home" method="post" id="rejectForm">
+            <p id="rejectStudentHint" class="modal-hint">请说明拒绝理由，学生可在请假记录中查看。</p>
+            <form action="<%= ctx %>/admin/home" method="post" id="rejectForm" novalidate>
                 <input type="hidden" name="action" value="rejectLeave">
                 <input type="hidden" name="leaveId" id="rejectLeaveId" value="">
                 <div class="form-group">
                     <label>拒绝原因 <span class="required">*</span></label>
-                    <textarea name="rejectReason" id="rejectReason" class="form-control" rows="4" required placeholder="例如：请假时间与课程冲突"></textarea>
+                    <textarea name="rejectReason" id="rejectReason" class="form-control" rows="4" placeholder="例如：请假时间与课程冲突"></textarea>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-outline" id="rejectCancelBtn">取消</button>
@@ -161,9 +163,11 @@
     </div>
 </div>
 
+<script src="<%= ctx %>/js/message.js"></script>
 <script>
 (function () {
     var modal = document.getElementById('rejectModal');
+    var rejectForm = document.getElementById('rejectForm');
     var leaveIdInput = document.getElementById('rejectLeaveId');
     var reasonInput = document.getElementById('rejectReason');
     var hint = document.getElementById('rejectStudentHint');
@@ -194,6 +198,26 @@
 
     cancelBtn.addEventListener('click', closeModal);
     closeBtn.addEventListener('click', closeModal);
+
+    rejectForm.addEventListener('submit', function (e) {
+        var reason = (reasonInput.value || '').trim();
+        if (!reason) {
+            e.preventDefault();
+            reasonInput.classList.add('is-invalid');
+            if (window.Message) {
+                Message.error('请填写拒绝原因');
+            }
+            reasonInput.focus();
+            return;
+        }
+        reasonInput.classList.remove('is-invalid');
+    });
+
+    reasonInput.addEventListener('input', function () {
+        if (reasonInput.classList.contains('is-invalid') && reasonInput.value.trim()) {
+            reasonInput.classList.remove('is-invalid');
+        }
+    });
 
     modal.addEventListener('click', function (e) {
         if (e.target === modal) {

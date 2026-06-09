@@ -28,6 +28,7 @@
     <title>统计中心 - 宿舍考勤与管理系统</title>
     <link rel="stylesheet" href="<%= ctx %>/css/common.css">
     <link rel="stylesheet" href="<%= ctx %>/css/admin-pages.css">
+    <!-- 引入图表库，用于生成图表 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -54,6 +55,7 @@
                 <div class="chart-grid">
                     <div class="chart-box">
                         <h4>近 7 日签到人数趋势</h4>
+                        // id 传给下面的 js 使用
                         <div class="chart-canvas-wrap"><canvas id="checkinTrendChart"></canvas></div>
                     </div>
                     <div class="chart-box">
@@ -68,10 +70,14 @@
 </div>
 <script>
 (function () {
+    // 创建签到趋势图表的标签和数据
     var trendLabels = [<% if (trendLabels != null) { for (int i = 0; i < trendLabels.size(); i++) { %>'<%= trendLabels.get(i) %>'<%= i < trendLabels.size() - 1 ? "," : "" %><% } } %>];
+    // 创建签到趋势图表的数据
     var trendValues = [<% if (trendValues != null) { for (int i = 0; i < trendValues.size(); i++) { %><%= trendValues.get(i) %><%= i < trendValues.size() - 1 ? "," : "" %><% } } %>];
 
+    // 创建签到趋势图表
     new Chart(document.getElementById('checkinTrendChart'), {
+        // 类型为柱状图
         type: 'bar',
         data: {
             labels: trendLabels,
@@ -92,7 +98,9 @@
         }
     });
 
+    // 创建请假状态分布图表
     new Chart(document.getElementById('leavePieChart'), {
+        // 类型为饼图
         type: 'doughnut',
         data: {
             labels: ['待审批', '已通过', '已驳回'],
