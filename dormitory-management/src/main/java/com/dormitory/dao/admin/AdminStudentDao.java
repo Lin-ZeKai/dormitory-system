@@ -133,12 +133,38 @@ public class AdminStudentDao {
         PreparedStatement ps = null;
         try {
             conn = DBUtil.getConnection();
+            conn.setAutoCommit(false);
+
+            ps = conn.prepareStatement("DELETE FROM t_attendance WHERE user_id = ?");
+            ps.setInt(1, id);
+            ps.executeUpdate();
+            ps.close();
+
+            ps = conn.prepareStatement("DELETE FROM t_leave WHERE user_id = ?");
+            ps.setInt(1, id);
+            ps.executeUpdate();
+            ps.close();
+
             ps = conn.prepareStatement("DELETE FROM t_user WHERE id = ? AND role = 'student'");
             ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
+            int rows = ps.executeUpdate();
+            conn.commit();
+            return rows > 0;
         } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ignored) {
+                }
+            }
             throw new RuntimeException("删除学生失败", e);
         } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException ignored) {
+                }
+            }
             DBUtil.close(conn, ps, null);
         }
     }
