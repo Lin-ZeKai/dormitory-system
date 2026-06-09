@@ -1,6 +1,7 @@
 package com.dormitory.servlet.admin;
 
 import com.dormitory.dao.admin.AdminAttendanceQueryDao;
+import com.dormitory.entity.StudentAttendanceOverview;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,6 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @WebServlet(name = "AdminAttendanceServlet", urlPatterns = "/admin/attendance")
 public class AdminAttendanceServlet extends HttpServlet {
@@ -33,6 +37,24 @@ public class AdminAttendanceServlet extends HttpServlet {
         req.setAttribute("attendanceList", attendanceQueryDao.findAll(checkDate, userId));
         req.setAttribute("filterDate", checkDate);
         req.setAttribute("filterUserId", userId);
+
+        String overviewDate = (checkDate != null && !checkDate.trim().isEmpty())
+                ? checkDate.trim()
+                : new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        List<StudentAttendanceOverview> statusList =
+                attendanceQueryDao.findStudentStatusOverview(overviewDate);
+        req.setAttribute("statusOverviewList", statusList);
+        req.setAttribute("overviewDate", overviewDate);
+
+        int checkedCount = 0;
+        for (StudentAttendanceOverview row : statusList) {
+            if (row.isCheckedIn()) {
+                checkedCount++;
+            }
+        }
+        req.setAttribute("overviewCheckedCount", checkedCount);
+        req.setAttribute("overviewUncheckedCount", statusList.size() - checkedCount);
+
         req.getRequestDispatcher("/admin/attendance.jsp").forward(req, resp);
     }
 }

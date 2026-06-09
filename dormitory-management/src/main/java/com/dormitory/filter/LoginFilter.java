@@ -39,7 +39,11 @@ public class LoginFilter implements Filter {
             "/register",
             "/login",
             "/css/",
-            "/prototype/"
+            "/js/",
+            "/lib/",
+            "/prototype/",
+            "/favicon.ico",
+            "/favicon.svg"
     );
 
     @Override

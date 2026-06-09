@@ -2,6 +2,7 @@ package com.dormitory.servlet;
 
 import com.dormitory.dao.UserDao;
 import com.dormitory.entity.User;
+import com.dormitory.util.ValidationUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,6 +36,11 @@ public class RegisterServlet extends HttpServlet {
             forward(req, resp);
             return;
         }
+        if (!ValidationUtil.isUsername(username)) {
+            req.setAttribute("errorMsg", ValidationUtil.USERNAME_MESSAGE);
+            forward(req, resp);
+            return;
+        }
         if (!password.equals(confirmPassword)) {
             req.setAttribute("errorMsg", "两次输入的密码不一致");
             forward(req, resp);
@@ -46,7 +52,7 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
         if (userDao.existsByUsername(username)) {
-            req.setAttribute("errorMsg", "用户名已存在");
+            req.setAttribute("errorMsg", "学号/手机号已存在");
             forward(req, resp);
             return;
         }

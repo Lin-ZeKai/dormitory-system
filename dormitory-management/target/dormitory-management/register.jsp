@@ -4,6 +4,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <%@ include file="/includes/favicon-link.jsp" %>
     <title>注册 - 宿舍考勤与管理系统</title>
     <link rel="stylesheet" href="<%= ctx %>/css/common.css">
 </head>
@@ -18,8 +19,9 @@
     <% } %>
     <form action="<%= ctx %>/register" method="post">
         <div class="form-group">
-            <label>用户名（学号） <span class="required">*</span></label>
-            <input type="text" name="username" class="form-control" placeholder="作为登录账号" required>
+            <label>学号/手机号 <span class="required">*</span></label>
+            <input type="text" name="username" class="form-control" placeholder="14位学号或11位手机号" required maxlength="14" inputmode="numeric">
+            <small class="form-hint">学校规定学号为14位数字，也可使用手机号</small>
         </div>
         <div class="form-group">
             <label>真实姓名 <span class="required">*</span></label>
@@ -27,11 +29,17 @@
         </div>
         <div class="form-group">
             <label>密码 <span class="required">*</span></label>
-            <input type="password" name="password" class="form-control" placeholder="至少6位" required>
+            <div class="password-field">
+                <input type="password" name="password" class="form-control" placeholder="至少6位" required>
+                <%@ include file="/includes/password-eye-button.jsp" %>
+            </div>
         </div>
         <div class="form-group">
             <label>确认密码 <span class="required">*</span></label>
-            <input type="password" name="confirmPassword" class="form-control" required>
+            <div class="password-field">
+                <input type="password" name="confirmPassword" class="form-control" required>
+                <%@ include file="/includes/password-eye-button.jsp" %>
+            </div>
         </div>
         <div class="form-group">
             <label>宿舍号</label>
@@ -41,5 +49,9 @@
     </form>
     <div class="auth-footer">已有账号？<a href="<%= ctx %>/login.jsp">返回登录</a></div>
 </div>
+<script src="<%= ctx %>/js/message.js"></script>
+<script src="<%= ctx %>/js/validation.js"></script>
+<script src="<%= ctx %>/js/password-toggle.js"></script>
+<script>DormValidation.bindUsernameForm(document.querySelector('form[action$="/register"]'));</script>
 </body>
 </html>

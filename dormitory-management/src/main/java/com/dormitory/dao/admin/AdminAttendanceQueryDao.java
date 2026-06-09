@@ -1,6 +1,7 @@
 package com.dormitory.dao.admin;
 
 import com.dormitory.entity.Attendance;
+import com.dormitory.entity.StudentAttendanceOverview;
 import com.dormitory.entity.User;
 import com.dormitory.util.DBUtil;
 
@@ -58,6 +59,43 @@ public class AdminAttendanceQueryDao {
             }
         } catch (SQLException e) {
             throw new RuntimeException("查询签到记录失败", e);
+        } finally {
+            DBUtil.close(conn, ps, rs);
+        }
+        return list;
+    }
+
+    /**
+     * 指定日期下全部学生的考勤状态（含未签到）
+     */
+    public List<StudentAttendanceOverview> findStudentStatusOverview(String checkDate) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<StudentAttendanceOverview> list = new ArrayList<StudentAttendanceOverview>();
+        String sql = "SELECT u.id, u.username, u.real_name, u.dorm_no, "
+                + "a.check_time, a.status "
+                + "FROM t_user u "
+                + "LEFT JOIN t_attendance a ON u.id = a.user_id AND a.check_date = ? "
+                + "WHERE u.role = 'student' "
+                + "ORDER BY u.username";
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, checkDate);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                StudentAttendanceOverview row = new StudentAttendanceOverview();
+                row.setUserId(rs.getInt("id"));
+                row.setUsername(rs.getString("username"));
+                row.setRealName(rs.getString("real_name"));
+                row.setDormNo(rs.getString("dorm_no"));
+                row.setCheckTime(rs.getTimestamp("check_time"));
+                row.setStatus(rs.getString("status"));
+                list.add(row);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("查询学生考勤状态失败", e);
         } finally {
             DBUtil.close(conn, ps, rs);
         }

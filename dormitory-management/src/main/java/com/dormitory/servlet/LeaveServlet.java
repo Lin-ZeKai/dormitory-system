@@ -3,6 +3,7 @@ package com.dormitory.servlet;
 import com.dormitory.dao.LeaveDao;
 import com.dormitory.entity.Leave;
 import com.dormitory.entity.User;
+import com.dormitory.util.ValidationUtil;
 import com.dormitory.util.WebUtil;
 
 import javax.servlet.ServletException;
@@ -52,6 +53,11 @@ public class LeaveServlet extends HttpServlet {
         if (isEmpty(leaveType) || isEmpty(phone) || isEmpty(startTimeStr)
                 || isEmpty(endTimeStr) || isEmpty(reason)) {
             req.setAttribute("errorMsg", "请完整填写请假信息");
+            doGet(req, resp);
+            return;
+        }
+        if (!ValidationUtil.isPhone(phone)) {
+            req.setAttribute("errorMsg", ValidationUtil.PHONE_MESSAGE);
             doGet(req, resp);
             return;
         }

@@ -234,6 +234,187 @@ a:hover {
     color: var(--danger);
 }
 
+.form-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Element UI 风格顶部 Message */
+.message-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.message {
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%, -120%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 320px;
+    max-width: 90vw;
+    padding: 12px 18px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.28s ease, opacity 0.28s ease;
+}
+
+.message.is-visible {
+    transform: translate(-50%, 0);
+    opacity: 1;
+}
+
+.message.is-leaving {
+    transform: translate(-50%, -120%);
+    opacity: 0;
+}
+
+.message-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.message-error {
+    background: #fef0f0;
+    border-color: #fde2e2;
+    color: #f56c6c;
+}
+
+.message-error .message-icon {
+    background: #f56c6c;
+    color: #fff;
+}
+
+.message-error .message-icon::before {
+    content: '×';
+}
+
+.message-warning {
+    background: #fdf6ec;
+    border-color: #faecd8;
+    color: #e6a23c;
+}
+
+.message-warning .message-icon {
+    background: #e6a23c;
+    color: #fff;
+}
+
+.message-warning .message-icon::before {
+    content: '!';
+}
+
+.message-success {
+    background: #f0f9eb;
+    border-color: #e1f3d8;
+    color: #67c23a;
+}
+
+.message-success .message-icon {
+    background: #67c23a;
+    color: #fff;
+}
+
+.message-success .message-icon::before {
+    content: '✓';
+}
+
+.message-info {
+    background: #edf2fc;
+    border-color: #d9ecff;
+    color: #409eff;
+}
+
+.message-info .message-icon {
+    background: #409eff;
+    color: #fff;
+}
+
+.message-info .message-icon::before {
+    content: 'i';
+    font-style: italic;
+}
+
+.form-control.is-invalid {
+    border-color: #ef4444;
+}
+
+.form-control.is-invalid:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.12);
+}
+
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+.password-field .form-control {
+    padding-right: 42px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #909399;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.password-toggle:hover {
+    color: var(--primary);
+}
+
+.password-toggle svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: currentColor;
+}
+
+.password-toggle .icon-hide {
+    display: none;
+}
+
+.password-toggle.is-visible .icon-show {
+    display: none;
+}
+
+.password-toggle.is-visible .icon-hide {
+    display: block;
+}
+
 .form-control {
     width: 100%;
     padding: 9px 12px;
@@ -260,51 +441,67 @@ textarea.form-control {
     gap: 16px;
 }
 
-.datetime-picker {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 10px;
-}
-
-.picker-field {
+.datetime-field {
     position: relative;
 }
 
-.picker-input {
-    width: 100%;
-    min-height: 40px;
-    font-family: inherit;
+.datetime-field .form-control {
+    padding-right: 38px;
+    cursor: pointer;
     background: var(--white);
+}
+
+.datetime-field .datetime-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #c0c4cc;
+    pointer-events: none;
+}
+
+.datetime-field .form-control:focus + .datetime-icon,
+.datetime-field:hover .datetime-icon {
+    color: #409eff;
+}
+
+.datetime-field .flatpickr-input {
+    width: 100%;
+}
+
+.datetime-field input.flatpickr-input[readonly] {
     cursor: pointer;
+    background: var(--white);
 }
 
-/* 未选择时隐藏 mm/dd/yyyy、--:-- 等浏览器默认占位 */
-.picker-input.form-control:invalid {
-    color: transparent;
+.form-select-wrap {
+    position: relative;
 }
 
-.picker-input.form-control:focus,
-.picker-input.form-control:valid {
-    color: var(--text);
-}
-
-.picker-input:not(:focus):invalid::-webkit-datetime-edit {
-    opacity: 0;
-}
-
-.picker-input:focus::-webkit-datetime-edit,
-.picker-input:valid::-webkit-datetime-edit {
-    opacity: 1;
-}
-
-.picker-input::-webkit-calendar-picker-indicator {
+.form-select-wrap .form-control {
+    appearance: none;
+    padding-right: 36px;
     cursor: pointer;
-    opacity: 0.5;
-    margin-left: auto;
+    background: var(--white);
 }
 
-.picker-input:hover::-webkit-calendar-picker-indicator {
-    opacity: 0.85;
+.form-select-wrap .select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #c0c4cc;
+    pointer-events: none;
+}
+
+.form-select-wrap .form-control:focus + .select-arrow {
+    border-top-color: #409eff;
 }
 
 .btn {

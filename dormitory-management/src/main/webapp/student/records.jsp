@@ -20,6 +20,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <%@ include file="/includes/favicon-link.jsp" %>
     <title>考勤记录 - 宿舍考勤与管理系统</title>
     <link rel="stylesheet" href="<%= ctx %>/css/common.css">
 </head>

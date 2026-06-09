@@ -27,6 +27,14 @@
         <extension>js</extension>
         <mime-type>application/javascript</mime-type>
     </mime-mapping>
+    <mime-mapping>
+        <extension>svg</extension>
+        <mime-type>image/svg+xml</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ico</extension>
+        <mime-type>image/x-icon</mime-type>
+    </mime-mapping>
 
     <!-- 编码过滤器：只拦截 JSP 和 Servlet，不拦截 css/js 等静态文件 -->
     <filter>

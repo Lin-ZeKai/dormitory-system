@@ -39,10 +39,13 @@
 <head>
 
     <meta charset="UTF-8">
+    <%@ include file="/includes/favicon-link.jsp" %>
 
     <title>请假申请 - 宿舍考勤与管理系统</title>
 
     <link rel="stylesheet" href="<%= ctx %>/css/common.css">
+    <link rel="stylesheet" href="<%= ctx %>/lib/flatpickr/flatpickr.min.css">
+    <link rel="stylesheet" href="<%= ctx %>/css/flatpickr-theme.css">
 
 </head>
 
@@ -74,7 +77,7 @@
 
                 <div class="card-title">填写请假信息</div>
 
-                <form action="<%= ctx %>/student/leave" method="post">
+                <form action="<%= ctx %>/student/leave" method="post" novalidate>
 
                     <div class="form-row">
 
@@ -82,7 +85,8 @@
 
                             <label>请假类型 <span class="required">*</span></label>
 
-                            <select name="leaveType" class="form-control" required>
+                            <div class="form-select-wrap">
+                            <select name="leaveType" class="form-control">
 
                                 <option value="">请选择</option>
 
@@ -99,6 +103,8 @@
                                 <option value="other">其他</option>
 
                             </select>
+                            <span class="select-arrow"></span>
+                            </div>
 
                         </div>
 
@@ -106,7 +112,7 @@
 
                             <label>联系电话 <span class="required">*</span></label>
 
-                            <input type="text" name="phone" class="form-control" required>
+                            <input type="text" name="phone" class="form-control" placeholder="11位手机号" maxlength="11" inputmode="numeric">
 
                         </div>
 
@@ -118,15 +124,10 @@
 
                             <label>开始时间 <span class="required">*</span></label>
 
-                            <div class="datetime-picker">
-                                <div class="picker-field">
-                                    <input type="date" id="startDate" class="form-control picker-input" required aria-label="开始日期">
-                                </div>
-                                <div class="picker-field">
-                                    <input type="time" id="startClock" class="form-control picker-input" required aria-label="开始时刻">
-                                </div>
+                            <div class="datetime-field">
+                                <input type="text" name="startTime" id="startTime" class="form-control" placeholder="请选择开始时间">
+                                <svg class="datetime-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zM7 12h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg>
                             </div>
-                            <input type="hidden" name="startTime" id="startTime">
 
                         </div>
 
@@ -134,15 +135,10 @@
 
                             <label>结束时间 <span class="required">*</span></label>
 
-                            <div class="datetime-picker">
-                                <div class="picker-field">
-                                    <input type="date" id="endDate" class="form-control picker-input" required aria-label="结束日期">
-                                </div>
-                                <div class="picker-field">
-                                    <input type="time" id="endClock" class="form-control picker-input" required aria-label="结束时刻">
-                                </div>
+                            <div class="datetime-field">
+                                <input type="text" name="endTime" id="endTime" class="form-control" placeholder="请选择结束时间">
+                                <svg class="datetime-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zM7 12h2v2H7v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg>
                             </div>
-                            <input type="hidden" name="endTime" id="endTime">
 
                         </div>
 
@@ -152,7 +148,7 @@
 
                         <label>请假原因 <span class="required">*</span></label>
 
-                        <textarea name="reason" class="form-control" required></textarea>
+                        <textarea name="reason" class="form-control"></textarea>
 
                     </div>
 
@@ -234,23 +230,41 @@
 
 </div>
 
+<script src="<%= ctx %>/lib/flatpickr/flatpickr.min.js"></script>
+<script src="<%= ctx %>/lib/flatpickr/zh.js"></script>
+<script src="<%= ctx %>/js/datetime-picker.js"></script>
+<script src="<%= ctx %>/js/message.js"></script>
+<script src="<%= ctx %>/js/validation.js"></script>
 <script>
 (function () {
     var form = document.querySelector('form[action$="/student/leave"]');
     if (!form) return;
 
-    function combine(dateId, timeId, hiddenId) {
-        var dateVal = document.getElementById(dateId).value;
-        var timeVal = document.getElementById(timeId).value;
-        document.getElementById(hiddenId).value = (dateVal && timeVal) ? (dateVal + 'T' + timeVal) : '';
-    }
+    DateTimePicker.bindLeaveForm(form);
+    DormValidation.setupPhoneInput(form.querySelector('input[name="phone"]'), { live: false });
 
     form.addEventListener('submit', function (e) {
-        combine('startDate', 'startClock', 'startTime');
-        combine('endDate', 'endClock', 'endTime');
+        var leaveType = form.querySelector('[name="leaveType"]');
+        if (!leaveType.value) {
+            e.preventDefault();
+            Message.warning('请选择请假类型');
+            return;
+        }
+        var phoneInput = form.querySelector('input[name="phone"]');
+        if (!DormValidation.validatePhoneField(phoneInput, true)) {
+            e.preventDefault();
+            phoneInput.focus();
+            return;
+        }
         if (!document.getElementById('startTime').value || !document.getElementById('endTime').value) {
             e.preventDefault();
-            alert('请选择完整的开始和结束时间');
+            Message.warning('请选择开始和结束时间');
+            return;
+        }
+        var reason = form.querySelector('[name="reason"]');
+        if (!reason.value.trim()) {
+            e.preventDefault();
+            Message.warning('请填写请假原因');
         }
     });
 })();

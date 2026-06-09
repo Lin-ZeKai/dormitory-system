@@ -2,6 +2,7 @@ package com.dormitory.servlet.admin;
 
 import com.dormitory.dao.admin.AdminStudentDao;
 import com.dormitory.entity.User;
+import com.dormitory.util.ValidationUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -51,6 +52,11 @@ public class AdminStudentServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/students");
             return;
         }
+        if (!ValidationUtil.isUsername(username)) {
+            AdminServletSupport.flash(req, ValidationUtil.USERNAME_MESSAGE);
+            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            return;
+        }
         if (studentDao.existsUsername(username, null)) {
             AdminServletSupport.flash(req, "学号已存在");
             resp.sendRedirect(req.getContextPath() + "/admin/students");
@@ -74,6 +80,11 @@ public class AdminStudentServlet extends HttpServlet {
             String password = trim(req.getParameter("password"));
             if (isEmpty(username) || isEmpty(realName)) {
                 AdminServletSupport.flash(req, "学号、姓名不能为空");
+                resp.sendRedirect(req.getContextPath() + "/admin/students");
+                return;
+            }
+            if (!ValidationUtil.isUsername(username)) {
+                AdminServletSupport.flash(req, ValidationUtil.USERNAME_MESSAGE);
                 resp.sendRedirect(req.getContextPath() + "/admin/students");
                 return;
             }

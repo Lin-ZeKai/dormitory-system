@@ -19,6 +19,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <%@ include file="/includes/favicon-link.jsp" %>
     <title>学生管理 - 宿舍考勤与管理系统</title>
     <link rel="stylesheet" href="<%= ctx %>/css/common.css">
     <link rel="stylesheet" href="<%= ctx %>/css/admin-pages.css">
@@ -39,15 +40,18 @@
             </div>
             <div class="data-panel">
                 <div class="data-panel-title">添加学生</div>
-                <form action="<%= ctx %>/admin/students" method="post" class="form-row">
+                <form action="<%= ctx %>/admin/students" method="post" class="form-row" autocomplete="off">
                     <input type="hidden" name="action" value="add">
+                    <input type="text" tabindex="-1" autocomplete="username" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+                    <input type="password" tabindex="-1" autocomplete="current-password" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
                     <div class="form-group">
-                        <label>学号/用户名 <span class="required">*</span></label>
-                        <input type="text" name="username" class="form-control" required>
+                        <label>学号/手机号 <span class="required">*</span></label>
+                        <input type="text" name="username" class="form-control" placeholder="14位学号或11位手机号" required maxlength="14" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');">
+                        <small class="form-hint">学校规定学号为14位数字，也可使用手机号作为登录账号</small>
                     </div>
                     <div class="form-group">
                         <label>密码 <span class="required">*</span></label>
-                        <input type="password" name="password" class="form-control" required>
+                        <input type="password" name="password" class="form-control" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');">
                     </div>
                     <div class="form-group">
                         <label>真实姓名 <span class="required">*</span></label>
@@ -103,13 +107,13 @@
     <div class="modal-box">
         <div class="modal-header"><h3>修改学生</h3><button type="button" class="modal-close" id="editCloseBtn">&times;</button></div>
         <div class="modal-body">
-            <form action="<%= ctx %>/admin/students" method="post" id="editForm">
+            <form action="<%= ctx %>/admin/students" method="post" id="editForm" autocomplete="off">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="id" id="editId">
-                <div class="form-group"><label>学号/用户名</label><input type="text" name="username" id="editUsername" class="form-control" required></div>
-                <div class="form-group"><label>真实姓名</label><input type="text" name="realName" id="editRealName" class="form-control" required></div>
-                <div class="form-group"><label>宿舍号</label><input type="text" name="dormNo" id="editDormNo" class="form-control"></div>
-                <div class="form-group"><label>新密码（留空则不修改）</label><input type="password" name="password" class="form-control"></div>
+                <div class="form-group"><label>学号/手机号</label><input type="text" name="username" id="editUsername" class="form-control" placeholder="14位学号或11位手机号" required maxlength="14" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false"><small class="form-hint">14位学号或11位手机号</small></div>
+                <div class="form-group"><label>真实姓名</label><input type="text" name="realName" id="editRealName" class="form-control" required autocomplete="off"></div>
+                <div class="form-group"><label>宿舍号</label><input type="text" name="dormNo" id="editDormNo" class="form-control" autocomplete="off"></div>
+                <div class="form-group"><label>新密码（留空则不修改）</label><input type="password" name="password" id="editPassword" class="form-control" autocomplete="new-password"></div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-outline" id="editCancelBtn">取消</button>
                     <button type="submit" class="btn btn-primary">保存</button>
@@ -137,10 +141,23 @@
     </div>
 </div>
 
+<script src="<%= ctx %>/js/message.js"></script>
+<script src="<%= ctx %>/js/validation.js"></script>
 <script>
 (function () {
     var flash = document.getElementById('flashToast');
     if (flash) setTimeout(function () { flash.classList.add('hide'); setTimeout(function () { flash.remove(); }, 350); }, 2000);
+
+    var addForm = document.querySelector('form input[name="action"][value="add"]');
+    if (addForm) {
+        addForm = addForm.closest('form');
+        DormValidation.bindUsernameForm(addForm, null, { live: false });
+        addForm.addEventListener('submit', function () {
+            addForm.querySelector('input[name="username"]').removeAttribute('readonly');
+            addForm.querySelector('input[name="password"]').removeAttribute('readonly');
+        });
+    }
+    DormValidation.bindUsernameForm(document.getElementById('editForm'), null, { live: false });
 
     function bindModal(modal, openFn, closeBtn, cancelBtn) {
         function close() { modal.classList.remove('show'); document.body.style.overflow = ''; }
@@ -158,6 +175,7 @@
             document.getElementById('editUsername').value = btn.getAttribute('data-username');
             document.getElementById('editRealName').value = btn.getAttribute('data-realname');
             document.getElementById('editDormNo').value = btn.getAttribute('data-dormno');
+            DormValidation.clearFieldError(document.getElementById('editUsername'));
             editModal.classList.add('show');
             document.body.style.overflow = 'hidden';
         });
