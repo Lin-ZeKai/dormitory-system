@@ -49,6 +49,58 @@ input[type="password"] {
     font-size: 14px;
 }
 
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+.password-field input[type="text"],
+.password-field input[type="password"] {
+    width: 100%;
+    padding-right: 42px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #909399;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.password-toggle:hover {
+    color: #409eff;
+}
+
+.password-toggle svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: currentColor;
+}
+
+.password-toggle .icon-hide {
+    display: none;
+}
+
+.password-toggle.is-visible .icon-show {
+    display: none;
+}
+
+.password-toggle.is-visible .icon-hide {
+    display: block;
+}
+
 input[type="text"]:focus,
 input[type="password"]:focus {
     outline: none;

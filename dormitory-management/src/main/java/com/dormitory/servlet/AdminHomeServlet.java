@@ -40,12 +40,14 @@ public class AdminHomeServlet extends HttpServlet {
         int todayAbsent = attendanceDao.countTodayAbsentStudents(totalStudents);
         int pendingLeave = leaveDao.countPending();
         List<Leave> pendingLeaves = leaveDao.findPendingAll();
+        List<Leave> auditedLeaves = leaveDao.findAuditedAll();
 
         req.setAttribute("totalStudents", totalStudents);
         req.setAttribute("todayCheckedIn", todayCheckedIn);
         req.setAttribute("todayAbsent", todayAbsent);
         req.setAttribute("pendingLeave", pendingLeave);
         req.setAttribute("pendingLeaves", pendingLeaves);
+        req.setAttribute("auditedLeaves", auditedLeaves);
 
         req.getRequestDispatcher("/admin/index.jsp").forward(req, resp);
     }

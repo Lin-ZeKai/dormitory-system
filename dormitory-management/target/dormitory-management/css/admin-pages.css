@@ -1,0 +1,110 @@
+/* 管理员扩展页面样式（新增，配合 common.css 使用） */
+
+.admin-page-header {
+    margin-bottom: 20px;
+}
+
+.admin-page-header h2 {
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+.admin-page-header p {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.data-panel {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.data-panel-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+    margin-bottom: 16px;
+}
+
+.filter-bar .form-group {
+    margin-bottom: 0;
+    min-width: 160px;
+}
+
+.filter-bar label {
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+}
+
+.chart-box {
+    min-height: 280px;
+    padding: 16px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    background: #fafbfc;
+}
+
+.chart-box h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--text);
+}
+
+.chart-canvas-wrap {
+    position: relative;
+    height: 220px;
+}
+
+.reserved-area {
+    min-height: 120px;
+    border: 1px dashed #cbd5e1;
+    border-radius: var(--radius);
+    background: repeating-linear-gradient(
+        -45deg,
+        #f8fafc,
+        #f8fafc 8px,
+        #f1f5f9 8px,
+        #f1f5f9 16px
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-top: 16px;
+}
+
+.action-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.inline-form {
+    display: inline;
+}
+
+@media (max-width: 992px) {
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+}

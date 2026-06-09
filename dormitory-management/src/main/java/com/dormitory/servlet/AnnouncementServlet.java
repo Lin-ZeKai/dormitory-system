@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet(name = "AnnouncementServlet", urlPatterns = "/announcements")
 public class AnnouncementServlet extends HttpServlet {
@@ -40,6 +39,12 @@ public class AnnouncementServlet extends HttpServlet {
             return;
         }
 
+        String action = req.getParameter("action");
+        if ("delete".equals(action)) {
+            handleDelete(req, resp);
+            return;
+        }
+
         String title = req.getParameter("title");
         String content = req.getParameter("content");
         String important = req.getParameter("important");
@@ -57,6 +62,21 @@ public class AnnouncementServlet extends HttpServlet {
         announcement.setIsImportant("on".equals(important) || "1".equals(important) ? 1 : 0);
         announcementDao.insert(announcement);
 
+        req.getSession().setAttribute("flashMsg", "公告发布成功");
+        resp.sendRedirect(req.getContextPath() + "/announcements");
+    }
+
+    private void handleDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            int id = Integer.parseInt(req.getParameter("announcementId"));
+            if (announcementDao.deleteById(id)) {
+                req.getSession().setAttribute("flashMsg", "公告已删除");
+            } else {
+                req.getSession().setAttribute("flashMsg", "删除失败，公告可能不存在");
+            }
+        } catch (NumberFormatException e) {
+            req.getSession().setAttribute("flashMsg", "删除参数无效");
+        }
         resp.sendRedirect(req.getContextPath() + "/announcements");
     }
 }

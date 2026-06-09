@@ -41,7 +41,11 @@
         <main class="main-content">
             <div class="page-header">
                 <h2>欢迎回来，<%= loginUser.getRealName() %></h2>
+                <% if (todayAttendance != null) { %>
+                <p>今日签到已完成，继续保持良好考勤习惯</p>
+                <% } else { %>
                 <p>请及时完成今日宿舍考勤签到</p>
+                <% } %>
             </div>
             <div class="stats-grid">
                 <div class="stat-card"><div class="label">本月签到</div><div class="value"><%= request.getAttribute("monthlyCount") %></div></div>
@@ -51,7 +55,7 @@
             </div>
             <div class="card">
                 <div class="card-title">今日考勤状态</div>
-                <p>签到时段：8:20-20:00</p>
+                <p>签到时段：<%= com.dormitory.util.CheckinTimeUtil.getWindowText() %></p>
                 <p style="margin-top:8px;">当前状态：
                     <% if (todayAttendance != null) { %>
                     <span class="badge badge-success">已签到</span>（<%= sdf.format(todayAttendance.getCheckTime()) %>）
@@ -59,7 +63,12 @@
                     <span class="badge badge-warning">未签到</span>
                     <% } %>
                 </p>
+                <% if (todayAttendance != null) { %>
+                <button type="button" class="btn btn-disabled" style="margin-top:16px;" disabled>今日已签到</button>
+                <p class="tip" style="margin-top:8px;">无需重复签到，可在「考勤记录」中查看详情</p>
+                <% } else { %>
                 <a href="<%= ctx %>/student/checkin" class="btn btn-primary" style="margin-top:16px;">去签到</a>
+                <% } %>
             </div>
             <div class="card">
                 <div class="card-title">最新公告</div>

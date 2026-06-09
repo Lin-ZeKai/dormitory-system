@@ -13,6 +13,7 @@
     String ctx = request.getContextPath();
     request.setAttribute("activeMenu", "home");
     List<Leave> pendingLeaves = (List<Leave>) request.getAttribute("pendingLeaves");
+    List<Leave> auditedLeaves = (List<Leave>) request.getAttribute("auditedLeaves");
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     int totalStudents = (Integer) request.getAttribute("totalStudents");
     int todayCheckedIn = (Integer) request.getAttribute("todayCheckedIn");
@@ -47,82 +48,133 @@
                 <div class="stat-card"><div class="label">今日缺勤</div><div class="value"><%= todayAbsent %></div></div>
                 <div class="stat-card"><div class="label">待审请假</div><div class="value"><%= pendingLeave %></div></div>
             </div>
-            <div class="card">
-                <div class="card-title">待审批请假</div>
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>学生</th><th>类型</th><th>时间段</th><th>原因</th><th>操作</th></tr></thead>
-                        <tbody>
-                        <% if (pendingLeaves == null || pendingLeaves.isEmpty()) { %>
-                        <tr><td colspan="5">暂无待审批请假</td></tr>
-                        <% } else {
-                            for (Leave leave : pendingLeaves) {
-                                String typeName = LeaveUtil.getTypeName(leave.getLeaveType());
-                        %>
-                        <tr>
-                            <td><%= leave.getRealName() %></td>
-                            <td><%= typeName %></td>
-                            <td><%= sdf.format(leave.getStartTime()) %> ~ <%= sdf.format(leave.getEndTime()) %></td>
-                            <td><%= leave.getReason() %></td>
-                            <td>
-                                <form action="<%= ctx %>/admin/home" method="post" style="display:inline;">
-                                    <input type="hidden" name="action" value="approveLeave">
-                                    <input type="hidden" name="leaveId" value="<%= leave.getId() %>">
-                                    <button type="submit" class="btn btn-primary btn-sm">通过</button>
-                                </form>
-                                <button type="button" class="btn btn-outline btn-sm reject-btn"
-                                        data-leave-id="<%= leave.getId() %>"
-                                        data-student="<%= leave.getRealName() %>">拒绝</button>
-                            </td>
-                        </tr>
-                        <%   }
-                           } %>
-                        </tbody>
-                    </table>
+            <div class="card leave-tabs-card">
+                <div class="tab-bar">
+                    <button type="button" class="tab-btn active" data-tab="pending">
+                        待审批请假
+                        <% if (pendingLeave > 0) { %><span class="tab-badge"><%= pendingLeave %></span><% } %>
+                    </button>
+                    <button type="button" class="tab-btn" data-tab="audited">已审批请假</button>
+                </div>
+                <div class="tab-panel active" id="tab-pending">
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>学生</th><th>联系电话</th><th>类型</th><th>时间段</th><th>原因</th><th>操作</th></tr></thead>
+                            <tbody>
+                            <% if (pendingLeaves == null || pendingLeaves.isEmpty()) { %>
+                            <tr><td colspan="6">暂无待审批请假</td></tr>
+                            <% } else {
+                                for (Leave leave : pendingLeaves) {
+                                    String typeName = LeaveUtil.getTypeName(leave.getLeaveType());
+                            %>
+                            <tr>
+                                <td><%= leave.getRealName() %></td>
+                                <td><%= leave.getPhone() != null ? leave.getPhone() : "-" %></td>
+                                <td><%= typeName %></td>
+                                <td><%= sdf.format(leave.getStartTime()) %> ~ <%= sdf.format(leave.getEndTime()) %></td>
+                                <td><%= leave.getReason() %></td>
+                                <td>
+                                    <form action="<%= ctx %>/admin/home" method="post" style="display:inline;">
+                                        <input type="hidden" name="action" value="approveLeave">
+                                        <input type="hidden" name="leaveId" value="<%= leave.getId() %>">
+                                        <button type="submit" class="btn btn-primary btn-sm">通过</button>
+                                    </form>
+                                    <button type="button" class="btn btn-outline btn-sm reject-btn"
+                                            data-leave-id="<%= leave.getId() %>"
+                                            data-student="<%= leave.getRealName() %>">拒绝</button>
+                                </td>
+                            </tr>
+                            <%   }
+                               } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-panel" id="tab-audited">
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>学生</th><th>联系电话</th><th>类型</th><th>时间段</th><th>原因</th><th>审批状态</th><th>审批意见</th><th>审批时间</th></tr></thead>
+                            <tbody>
+                            <% if (auditedLeaves == null || auditedLeaves.isEmpty()) { %>
+                            <tr><td colspan="8">暂无已审批记录</td></tr>
+                            <% } else {
+                                for (Leave leave : auditedLeaves) {
+                                    String typeName = LeaveUtil.getTypeName(leave.getLeaveType());
+                                    String statusBadge = LeaveUtil.getStatusBadgeClass(leave.getStatus());
+                                    String statusName = LeaveUtil.getStatusName(leave.getStatus());
+                                    String auditComment = leave.getRejectReason() != null && !leave.getRejectReason().trim().isEmpty()
+                                            ? leave.getRejectReason() : "-";
+                                    String auditTimeText = leave.getAuditTime() != null
+                                            ? sdf.format(leave.getAuditTime()) : "-";
+                            %>
+                            <tr>
+                                <td><%= leave.getRealName() %></td>
+                                <td><%= leave.getPhone() != null ? leave.getPhone() : "-" %></td>
+                                <td><%= typeName %></td>
+                                <td><%= sdf.format(leave.getStartTime()) %> ~ <%= sdf.format(leave.getEndTime()) %></td>
+                                <td><%= leave.getReason() %></td>
+                                <td><span class="badge <%= statusBadge %>"><%= statusName %></span></td>
+                                <td><%= auditComment %></td>
+                                <td><%= auditTimeText %></td>
+                            </tr>
+                            <%   }
+                               } %>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 </div>
 
-<div class="modal-overlay" id="rejectModal">
-    <div class="modal-box">
-        <h3>填写拒绝原因</h3>
-        <p id="rejectStudentHint">请说明拒绝理由，学生可在请假记录中查看。</p>
-        <form action="<%= ctx %>/admin/home" method="post" id="rejectForm">
-            <input type="hidden" name="action" value="rejectLeave">
-            <input type="hidden" name="leaveId" id="rejectLeaveId" value="">
-            <div class="form-group">
-                <label>拒绝原因 <span class="required">*</span></label>
-                <textarea name="rejectReason" id="rejectReason" class="form-control" required placeholder="例如：请假时间与课程冲突"></textarea>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn btn-outline" id="rejectCancelBtn">取消</button>
-                <button type="submit" class="btn btn-primary">确认拒绝</button>
-            </div>
-        </form>
+<div class="modal-overlay" id="rejectModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="rejectModalTitle">
+        <div class="modal-header">
+            <h3 id="rejectModalTitle">填写拒绝原因</h3>
+            <button type="button" class="modal-close" id="rejectCloseBtn" aria-label="关闭">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="rejectStudentHint">请说明拒绝理由，学生可在请假记录中查看。</p>
+            <form action="<%= ctx %>/admin/home" method="post" id="rejectForm">
+                <input type="hidden" name="action" value="rejectLeave">
+                <input type="hidden" name="leaveId" id="rejectLeaveId" value="">
+                <div class="form-group">
+                    <label>拒绝原因 <span class="required">*</span></label>
+                    <textarea name="rejectReason" id="rejectReason" class="form-control" rows="4" required placeholder="例如：请假时间与课程冲突"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="rejectCancelBtn">取消</button>
+                    <button type="submit" class="btn btn-primary">确认拒绝</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
 (function () {
     var modal = document.getElementById('rejectModal');
-    var form = document.getElementById('rejectForm');
     var leaveIdInput = document.getElementById('rejectLeaveId');
     var reasonInput = document.getElementById('rejectReason');
     var hint = document.getElementById('rejectStudentHint');
     var cancelBtn = document.getElementById('rejectCancelBtn');
+    var closeBtn = document.getElementById('rejectCloseBtn');
 
     function openModal(leaveId, studentName) {
         leaveIdInput.value = leaveId;
         reasonInput.value = '';
         hint.textContent = '学生「' + studentName + '」的请假将被拒绝，请填写原因。';
         modal.classList.add('show');
-        reasonInput.focus();
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () { reasonInput.focus(); }, 50);
     }
 
     function closeModal() {
         modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
     }
 
     document.querySelectorAll('.reject-btn').forEach(function (btn) {
@@ -132,10 +184,35 @@
     });
 
     cancelBtn.addEventListener('click', closeModal);
+    closeBtn.addEventListener('click', closeModal);
+
     modal.addEventListener('click', function (e) {
         if (e.target === modal) {
             closeModal();
         }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
+})();
+
+(function () {
+    var tabBtns = document.querySelectorAll('.tab-btn');
+    var tabPanels = document.querySelectorAll('.tab-panel');
+    if (!tabBtns.length) return;
+
+    tabBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var target = btn.getAttribute('data-tab');
+            tabBtns.forEach(function (b) { b.classList.remove('active'); });
+            tabPanels.forEach(function (p) { p.classList.remove('active'); });
+            btn.classList.add('active');
+            var panel = document.getElementById('tab-' + target);
+            if (panel) panel.classList.add('active');
+        });
     });
 })();
 </script>

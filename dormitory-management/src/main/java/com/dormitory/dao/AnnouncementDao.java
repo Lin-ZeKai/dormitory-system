@@ -76,6 +76,21 @@ public class AnnouncementDao {
         }
     }
 
+    public boolean deleteById(int id) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement("DELETE FROM t_announcement WHERE id = ?");
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("删除公告失败", e);
+        } finally {
+            DBUtil.close(conn, ps, null);
+        }
+    }
+
     private Announcement mapRow(ResultSet rs) throws SQLException {
         Announcement a = new Announcement();
         a.setId(rs.getInt("id"));

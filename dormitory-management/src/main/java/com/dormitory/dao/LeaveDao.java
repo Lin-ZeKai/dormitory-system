@@ -217,6 +217,33 @@ public class LeaveDao {
         return list;
     }
 
+    public List<Leave> findAuditedAll() {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Leave> list = new ArrayList<Leave>();
+        String sql = "SELECT l.id, l.user_id, l.leave_type, l.phone, l.start_time, l.end_time, l.reason, "
+                + "l.status, l.reject_reason, l.audit_time, l.create_time, u.real_name "
+                + "FROM t_leave l LEFT JOIN t_user u ON l.user_id = u.id "
+                + "WHERE l.status IN ('approved', 'rejected') "
+                + "ORDER BY l.audit_time DESC, l.create_time DESC";
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Leave leave = mapRow(rs);
+                leave.setRealName(rs.getString("real_name"));
+                list.add(leave);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("查询已审批请假失败", e);
+        } finally {
+            DBUtil.close(conn, ps, rs);
+        }
+        return list;
+    }
+
     public boolean approveLeave(int leaveId) {
         Connection conn = null;
         PreparedStatement ps = null;
