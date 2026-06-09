@@ -50,6 +50,11 @@ public class RegisterServlet extends HttpServlet {
             forward(req, resp);
             return;
         }
+        if (!ValidationUtil.isRealName(realName)) {
+            req.setAttribute("errorMsg", ValidationUtil.REAL_NAME_MESSAGE);
+            forward(req, resp);
+            return;
+        }
         if (studentNo.equals(phone)) {
             req.setAttribute("errorMsg", "学号与手机号不能相同");
             forward(req, resp);

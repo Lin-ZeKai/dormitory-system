@@ -2,6 +2,7 @@ package com.dormitory.servlet.admin;
 
 import com.dormitory.dao.admin.AdminStudentDao;
 import com.dormitory.entity.User;
+import com.dormitory.util.DbSchemaUtil;
 import com.dormitory.util.ValidationUtil;
 
 import javax.servlet.ServletException;
@@ -20,7 +21,7 @@ public class AdminStudentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         if (!AdminServletSupport.requireAdmin(req, resp)) return;
-        req.setAttribute("studentList", studentDao.findAllStudents());
+        prepareStudentsPage(req);
         req.getRequestDispatcher("/admin/students.jsp").forward(req, resp);
     }
 
@@ -42,40 +43,52 @@ public class AdminStudentServlet extends HttpServlet {
         }
     }
 
-    private void handleAdd(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void handleAdd(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         String username = trim(req.getParameter("username"));
         String phone = trim(req.getParameter("phone"));
         String password = trim(req.getParameter("password"));
         String realName = trim(req.getParameter("realName"));
         String dormNo = trim(req.getParameter("dormNo"));
+        if (!DbSchemaUtil.isUserPhoneColumnAvailable()) {
+            forwardAddForm(req, resp,
+                    "数据库缺少 phone 字段，请先执行 sql/update_v3_phone.sql 并重启服务",
+                    username, phone, password, realName, dormNo);
+            return;
+        }
         if (isEmpty(username) || isEmpty(phone) || isEmpty(password) || isEmpty(realName)) {
-            AdminServletSupport.flash(req, "学号、手机号、密码、姓名不能为空");
-            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            forwardAddForm(req, resp, "学号、手机号、密码、姓名不能为空",
+                    username, phone, password, realName, dormNo);
             return;
         }
         if (!ValidationUtil.isStudentId(username)) {
-            AdminServletSupport.flash(req, ValidationUtil.STUDENT_ID_MESSAGE);
-            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            forwardAddForm(req, resp, ValidationUtil.STUDENT_ID_MESSAGE,
+                    username, phone, password, realName, dormNo);
             return;
         }
         if (!ValidationUtil.isPhone(phone)) {
-            AdminServletSupport.flash(req, ValidationUtil.PHONE_MESSAGE);
-            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            forwardAddForm(req, resp, ValidationUtil.PHONE_MESSAGE,
+                    username, phone, password, realName, dormNo);
+            return;
+        }
+        if (!ValidationUtil.isRealName(realName)) {
+            forwardAddForm(req, resp, ValidationUtil.REAL_NAME_MESSAGE,
+                    username, phone, password, realName, dormNo);
             return;
         }
         if (username.equals(phone)) {
-            AdminServletSupport.flash(req, "学号与手机号不能相同");
-            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            forwardAddForm(req, resp, "学号与手机号不能相同",
+                    username, phone, password, realName, dormNo);
             return;
         }
         if (studentDao.existsUsername(username, null)) {
-            AdminServletSupport.flash(req, "学号已存在");
-            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            forwardAddForm(req, resp, "学号已存在",
+                    username, phone, password, realName, dormNo);
             return;
         }
         if (studentDao.existsPhone(phone, null)) {
-            AdminServletSupport.flash(req, "手机号已被占用");
-            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            forwardAddForm(req, resp, "手机号已被占用",
+                    username, phone, password, realName, dormNo);
             return;
         }
         User user = new User();
@@ -84,8 +97,33 @@ public class AdminStudentServlet extends HttpServlet {
         user.setPassword(password);
         user.setRealName(realName);
         user.setDormNo(dormNo);
-        AdminServletSupport.flash(req, studentDao.insertStudent(user) ? "学生添加成功" : "添加失败");
-        resp.sendRedirect(req.getContextPath() + "/admin/students");
+        if (studentDao.insertStudent(user)) {
+            AdminServletSupport.flash(req, "学生添加成功");
+            resp.sendRedirect(req.getContextPath() + "/admin/students");
+        } else {
+            forwardAddForm(req, resp, "添加失败",
+                    username, phone, password, realName, dormNo);
+        }
+    }
+
+    private void forwardAddForm(HttpServletRequest req, HttpServletResponse resp, String message,
+                                String username, String phone, String password,
+                                String realName, String dormNo)
+            throws ServletException, IOException {
+        AdminServletSupport.flash(req, message);
+        req.setAttribute("hasAddDraft", Boolean.TRUE);
+        req.setAttribute("addDraftUsername", username != null ? username : "");
+        req.setAttribute("addDraftPhone", phone != null ? phone : "");
+        req.setAttribute("addDraftPassword", password != null ? password : "");
+        req.setAttribute("addDraftRealName", realName != null ? realName : "");
+        req.setAttribute("addDraftDormNo", dormNo != null ? dormNo : "");
+        prepareStudentsPage(req);
+        req.getRequestDispatcher("/admin/students.jsp").forward(req, resp);
+    }
+
+    private void prepareStudentsPage(HttpServletRequest req) {
+        req.setAttribute("studentList", studentDao.findAllStudents());
+        req.setAttribute("phoneColumnAvailable", DbSchemaUtil.isUserPhoneColumnAvailable());
     }
 
     private void handleUpdate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -108,6 +146,11 @@ public class AdminStudentServlet extends HttpServlet {
             }
             if (!ValidationUtil.isPhone(phone)) {
                 AdminServletSupport.flash(req, ValidationUtil.PHONE_MESSAGE);
+                resp.sendRedirect(req.getContextPath() + "/admin/students");
+                return;
+            }
+            if (!ValidationUtil.isRealName(realName)) {
+                AdminServletSupport.flash(req, ValidationUtil.REAL_NAME_MESSAGE);
                 resp.sendRedirect(req.getContextPath() + "/admin/students");
                 return;
             }

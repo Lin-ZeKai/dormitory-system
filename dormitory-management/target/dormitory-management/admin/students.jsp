@@ -14,6 +14,21 @@
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String flashMsg = (String) session.getAttribute("flashMsg");
     if (flashMsg != null) session.removeAttribute("flashMsg");
+    Boolean hasAddDraft = (Boolean) request.getAttribute("hasAddDraft");
+    String addDraftUsername = hasAddDraft != null && hasAddDraft ? (String) request.getAttribute("addDraftUsername") : "";
+    String addDraftPhone = hasAddDraft != null && hasAddDraft ? (String) request.getAttribute("addDraftPhone") : "";
+    String addDraftPassword = hasAddDraft != null && hasAddDraft ? (String) request.getAttribute("addDraftPassword") : "";
+    String addDraftRealName = hasAddDraft != null && hasAddDraft ? (String) request.getAttribute("addDraftRealName") : "";
+    String addDraftDormNo = hasAddDraft != null && hasAddDraft ? (String) request.getAttribute("addDraftDormNo") : "";
+    if (addDraftUsername == null) addDraftUsername = "";
+    if (addDraftPhone == null) addDraftPhone = "";
+    if (addDraftPassword == null) addDraftPassword = "";
+    if (addDraftRealName == null) addDraftRealName = "";
+    if (addDraftDormNo == null) addDraftDormNo = "";
+    Boolean phoneColumnAvailable = (Boolean) request.getAttribute("phoneColumnAvailable");
+    if (phoneColumnAvailable == null) {
+        phoneColumnAvailable = com.dormitory.util.DbSchemaUtil.isUserPhoneColumnAvailable();
+    }
 %>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -34,6 +49,9 @@
         </header>
         <main class="main-content">
             <% if (flashMsg != null) { %><div class="alert alert-info alert-toast" id="flashToast"><%= flashMsg %></div><% } %>
+            <% if (!phoneColumnAvailable) { %>
+            <div class="alert alert-info">数据库尚未启用手机号字段，列表无法显示手机号。请在 MySQL 中执行 <code>sql/update_v3_phone.sql</code> 后重启服务，再通过「修改」补录已有学生的手机号。</div>
+            <% } %>
             <div class="admin-page-header">
                 <h2>学生信息管理</h2>
                 <p>查看、添加、修改、删除学生账号</p>
@@ -46,23 +64,23 @@
                     <input type="password" tabindex="-1" autocomplete="current-password" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
                     <div class="form-group">
                         <label>学号 <span class="required">*</span></label>
-                        <input type="text" name="username" class="form-control" placeholder="14位学号" maxlength="14" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');">
+                        <input type="text" name="username" class="form-control" placeholder="14位学号" maxlength="14" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" value="<%= addDraftUsername %>"<% if (hasAddDraft == null || !hasAddDraft) { %> readonly onfocus="this.removeAttribute('readonly');"<% } %>>
                     </div>
                     <div class="form-group">
                         <label>手机号 <span class="required">*</span></label>
-                        <input type="text" name="phone" class="form-control" placeholder="11位手机号" maxlength="11" inputmode="numeric" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
+                        <input type="text" name="phone" class="form-control" placeholder="11位手机号" maxlength="11" inputmode="numeric" autocomplete="off" value="<%= addDraftPhone %>"<% if (hasAddDraft == null || !hasAddDraft) { %> readonly onfocus="this.removeAttribute('readonly');"<% } %>>
                     </div>
                     <div class="form-group">
                         <label>密码 <span class="required">*</span></label>
-                        <input type="password" name="password" class="form-control" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');">
+                        <input type="password" name="password" class="form-control" required autocomplete="new-password" value="<%= addDraftPassword %>"<% if (hasAddDraft == null || !hasAddDraft) { %> readonly onfocus="this.removeAttribute('readonly');"<% } %>>
                     </div>
                     <div class="form-group">
                         <label>真实姓名 <span class="required">*</span></label>
-                        <input type="text" name="realName" class="form-control" required>
+                        <input type="text" name="realName" class="form-control" required placeholder="如：张三" maxlength="20" value="<%= addDraftRealName %>">
                     </div>
                     <div class="form-group">
                         <label>宿舍号</label>
-                        <input type="text" name="dormNo" class="form-control" placeholder="如：3号楼302">
+                        <input type="text" name="dormNo" class="form-control" placeholder="如：3号楼302" value="<%= addDraftDormNo %>">
                     </div>
                     <div class="form-group" style="display:flex;align-items:flex-end;">
                         <button type="submit" class="btn btn-primary btn-sm">添加学生</button>
@@ -117,7 +135,7 @@
                 <input type="hidden" name="id" id="editId">
                 <div class="form-group"><label>学号</label><input type="text" name="username" id="editUsername" class="form-control" placeholder="14位学号" maxlength="14" inputmode="numeric" autocomplete="off"></div>
                 <div class="form-group"><label>手机号</label><input type="text" name="phone" id="editPhone" class="form-control" placeholder="11位手机号" maxlength="11" inputmode="numeric" autocomplete="off"></div>
-                <div class="form-group"><label>真实姓名</label><input type="text" name="realName" id="editRealName" class="form-control" required autocomplete="off"></div>
+                <div class="form-group"><label>真实姓名</label><input type="text" name="realName" id="editRealName" class="form-control" required autocomplete="off" placeholder="如：张三" maxlength="20"></div>
                 <div class="form-group"><label>宿舍号</label><input type="text" name="dormNo" id="editDormNo" class="form-control" autocomplete="off"></div>
                 <div class="form-group"><label>新密码（留空则不修改）</label><input type="password" name="password" id="editPassword" class="form-control" autocomplete="new-password"></div>
                 <div class="modal-actions">
@@ -185,6 +203,7 @@
             document.getElementById('editDormNo').value = btn.getAttribute('data-dormno');
             DormValidation.clearFieldError(document.getElementById('editUsername'));
             DormValidation.clearFieldError(document.getElementById('editPhone'));
+            DormValidation.clearFieldError(document.getElementById('editRealName'));
             editModal.classList.add('show');
             document.body.style.overflow = 'hidden';
         });

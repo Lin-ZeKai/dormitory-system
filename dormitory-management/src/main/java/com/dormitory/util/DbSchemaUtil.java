@@ -24,7 +24,7 @@ public final class DbSchemaUtil {
             conn = DBUtil.getConnection();
             return isUserPhoneColumnAvailable(conn);
         } catch (SQLException e) {
-            userPhoneColumnAvailable = Boolean.FALSE;
+            // 连接失败时不缓存结果，避免误判为「无 phone 列」
             return false;
         } finally {
             if (conn != null) {
@@ -40,21 +40,36 @@ public final class DbSchemaUtil {
         if (userPhoneColumnAvailable != null) {
             return userPhoneColumnAvailable;
         }
+        userPhoneColumnAvailable = probePhoneColumn(conn);
+        return userPhoneColumnAvailable;
+    }
+
+    private static boolean probePhoneColumn(Connection conn) throws SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             ps = conn.prepareStatement("SELECT phone FROM t_user LIMIT 1");
             rs = ps.executeQuery();
-            userPhoneColumnAvailable = Boolean.TRUE;
+            return true;
         } catch (SQLException e) {
-            if (e.getMessage() != null && e.getMessage().contains("Unknown column 'phone'")) {
-                userPhoneColumnAvailable = Boolean.FALSE;
-            } else {
-                throw e;
+            if (isMissingPhoneColumn(e)) {
+                return false;
             }
+            throw e;
         } finally {
             DBUtil.close(null, ps, rs);
         }
-        return userPhoneColumnAvailable;
+    }
+
+    private static boolean isMissingPhoneColumn(SQLException e) {
+        String msg = e.getMessage();
+        if (msg == null) {
+            return false;
+        }
+        String lower = msg.toLowerCase();
+        return lower.contains("unknown column 'phone'")
+                || lower.contains("unknown column `phone`")
+                || msg.contains("Unknown column 'phone'")
+                || msg.contains("不存在") && msg.contains("phone");
     }
 }

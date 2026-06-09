@@ -6,6 +6,7 @@
 var DormValidation = (function () {
     var STUDENT_ID = /^\d{14}$/;
     var PHONE = /^1[3-9]\d{9}$/;
+    var REAL_NAME = /^[\u4e00-\u9fa5a-zA-Z·]{2,20}$/;
 
     function trim(v) {
         return (v || '').trim();
@@ -17,6 +18,10 @@ var DormValidation = (function () {
 
     function isPhone(v) {
         return PHONE.test(trim(v));
+    }
+
+    function isRealName(v) {
+        return REAL_NAME.test(trim(v));
     }
 
     function isUsername(v) {
@@ -83,6 +88,23 @@ var DormValidation = (function () {
             return '学号须为 14 位数字，当前已输入 ' + t.length + ' 位';
         }
         return '学号须为 14 位数字';
+    }
+
+    function getRealNameErrorMessage(v) {
+        var t = trim(v);
+        if (!t) {
+            return '请输入真实姓名';
+        }
+        if (isRealName(t)) {
+            return null;
+        }
+        if (t.length < 2) {
+            return '姓名至少 2 个字符';
+        }
+        if (t.length > 20) {
+            return '姓名不能超过 20 个字符';
+        }
+        return '姓名只能包含中文、英文字母或间隔号「·」，不能包含数字';
     }
 
     function validateStudentIdField(input, forceShow) {
@@ -185,6 +207,21 @@ var DormValidation = (function () {
         return true;
     }
 
+    function validateRealNameField(input, forceShow) {
+        if (!input) {
+            return true;
+        }
+        var msg = getRealNameErrorMessage(input.value);
+        if (msg) {
+            if (forceShow) {
+                showFieldError(input, msg);
+            }
+            return false;
+        }
+        clearFieldError(input);
+        return true;
+    }
+
     function bindLiveValidation(input, validateFn) {
         if (!input) {
             return;
@@ -214,6 +251,18 @@ var DormValidation = (function () {
         }
         input.addEventListener('input', function () {
             var cleaned = input.value.replace(/\D/g, '');
+            if (input.value !== cleaned) {
+                input.value = cleaned;
+            }
+        });
+    }
+
+    function realNameOnly(input) {
+        if (!input) {
+            return;
+        }
+        input.addEventListener('input', function () {
+            var cleaned = input.value.replace(/[^\u4e00-\u9fa5a-zA-Z·]/g, '');
             if (input.value !== cleaned) {
                 input.value = cleaned;
             }
@@ -278,6 +327,25 @@ var DormValidation = (function () {
         }
     }
 
+    function setupRealNameInput(input, options) {
+        options = options || {};
+        if (!input) {
+            return;
+        }
+        input.setAttribute('maxlength', '20');
+        if (!input.getAttribute('placeholder')) {
+            input.setAttribute('placeholder', '如：张三');
+        }
+        realNameOnly(input);
+        if (options.live === false) {
+            bindSubmitOnlyClear(input, function (v) {
+                return !getRealNameErrorMessage(v);
+            });
+        } else {
+            bindLiveValidation(input, validateRealNameField);
+        }
+    }
+
     function bindStudentAccountForm(form, options) {
         options = options || {};
         if (!form) {
@@ -290,8 +358,10 @@ var DormValidation = (function () {
             : 'input[name="username"]';
         var studentInput = form.querySelector(studentSelector);
         var phoneInput = form.querySelector('input[name="phone"]');
+        var realNameInput = form.querySelector('input[name="realName"]');
         setupStudentIdInput(studentInput, options);
         setupPhoneInput(phoneInput, options);
+        setupRealNameInput(realNameInput, options);
         form.addEventListener('submit', function (e) {
             var studentOk = validateStudentIdField(studentInput, true);
             if (!studentOk) {
@@ -302,6 +372,11 @@ var DormValidation = (function () {
             if (!validatePhoneField(phoneInput, true)) {
                 e.preventDefault();
                 phoneInput.focus();
+                return;
+            }
+            if (!validateRealNameField(realNameInput, true)) {
+                e.preventDefault();
+                realNameInput.focus();
                 return;
             }
             if (trim(studentInput.value) === trim(phoneInput.value)) {
@@ -351,18 +426,22 @@ var DormValidation = (function () {
     return {
         isStudentId: isStudentId,
         isPhone: isPhone,
+        isRealName: isRealName,
         isUsername: isUsername,
         getStudentIdErrorMessage: getStudentIdErrorMessage,
         getUsernameErrorMessage: getUsernameErrorMessage,
         getPhoneErrorMessage: getPhoneErrorMessage,
+        getRealNameErrorMessage: getRealNameErrorMessage,
         showFieldError: showFieldError,
         clearFieldError: clearFieldError,
         validateStudentIdField: validateStudentIdField,
         validateUsernameField: validateUsernameField,
         validatePhoneField: validatePhoneField,
+        validateRealNameField: validateRealNameField,
         setupStudentIdInput: setupStudentIdInput,
         setupUsernameInput: setupUsernameInput,
         setupPhoneInput: setupPhoneInput,
+        setupRealNameInput: setupRealNameInput,
         bindRegisterForm: bindRegisterForm,
         bindStudentAccountForm: bindStudentAccountForm,
         bindUsernameForm: bindUsernameForm,
