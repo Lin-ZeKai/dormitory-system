@@ -60,7 +60,7 @@
                         <div class="chart-canvas-wrap"><canvas id="leavePieChart"></canvas></div>
                     </div>
                 </div>
-                <div class="reserved-area">数据展示扩展区（待审请假 <%= pendingLeave %> 条 · 可接入月度报表、楼栋对比等）</div>
+                <!-- <div class="reserved-area">数据展示扩展区（待审请假 <%= pendingLeave %> 条 · 可接入月度报表、楼栋对比等）</div> -->
             </div>
         </main>
     </div>

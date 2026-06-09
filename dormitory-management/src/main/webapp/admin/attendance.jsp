@@ -89,7 +89,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="reserved-area">数据展示扩展区（可接入按楼栋统计、导出报表等功能）</div>
+                <!-- <div class="reserved-area">数据展示扩展区（可接入按楼栋统计、导出报表等功能）</div> -->
             </div>
         </main>
     </div>
