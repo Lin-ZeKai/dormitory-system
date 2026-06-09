@@ -12,6 +12,7 @@ public class StudentAttendanceOverview implements Serializable {
 
     private Integer userId;
     private String username;
+    private String phone;
     private String realName;
     private String dormNo;
     private Date checkTime;
@@ -23,6 +24,9 @@ public class StudentAttendanceOverview implements Serializable {
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
     public String getRealName() { return realName; }
     public void setRealName(String realName) { this.realName = realName; }

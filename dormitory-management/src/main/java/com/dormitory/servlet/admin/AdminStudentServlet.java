@@ -44,16 +44,27 @@ public class AdminStudentServlet extends HttpServlet {
 
     private void handleAdd(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String username = trim(req.getParameter("username"));
+        String phone = trim(req.getParameter("phone"));
         String password = trim(req.getParameter("password"));
         String realName = trim(req.getParameter("realName"));
         String dormNo = trim(req.getParameter("dormNo"));
-        if (isEmpty(username) || isEmpty(password) || isEmpty(realName)) {
-            AdminServletSupport.flash(req, "学号、密码、姓名不能为空");
+        if (isEmpty(username) || isEmpty(phone) || isEmpty(password) || isEmpty(realName)) {
+            AdminServletSupport.flash(req, "学号、手机号、密码、姓名不能为空");
             resp.sendRedirect(req.getContextPath() + "/admin/students");
             return;
         }
-        if (!ValidationUtil.isUsername(username)) {
-            AdminServletSupport.flash(req, ValidationUtil.USERNAME_MESSAGE);
+        if (!ValidationUtil.isStudentId(username)) {
+            AdminServletSupport.flash(req, ValidationUtil.STUDENT_ID_MESSAGE);
+            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            return;
+        }
+        if (!ValidationUtil.isPhone(phone)) {
+            AdminServletSupport.flash(req, ValidationUtil.PHONE_MESSAGE);
+            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            return;
+        }
+        if (username.equals(phone)) {
+            AdminServletSupport.flash(req, "学号与手机号不能相同");
             resp.sendRedirect(req.getContextPath() + "/admin/students");
             return;
         }
@@ -62,8 +73,14 @@ public class AdminStudentServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/students");
             return;
         }
+        if (studentDao.existsPhone(phone, null)) {
+            AdminServletSupport.flash(req, "手机号已被占用");
+            resp.sendRedirect(req.getContextPath() + "/admin/students");
+            return;
+        }
         User user = new User();
         user.setUsername(username);
+        user.setPhone(phone);
         user.setPassword(password);
         user.setRealName(realName);
         user.setDormNo(dormNo);
@@ -75,16 +92,27 @@ public class AdminStudentServlet extends HttpServlet {
         try {
             int id = Integer.parseInt(req.getParameter("id"));
             String username = trim(req.getParameter("username"));
+            String phone = trim(req.getParameter("phone"));
             String realName = trim(req.getParameter("realName"));
             String dormNo = trim(req.getParameter("dormNo"));
             String password = trim(req.getParameter("password"));
-            if (isEmpty(username) || isEmpty(realName)) {
-                AdminServletSupport.flash(req, "学号、姓名不能为空");
+            if (isEmpty(username) || isEmpty(phone) || isEmpty(realName)) {
+                AdminServletSupport.flash(req, "学号、手机号、姓名不能为空");
                 resp.sendRedirect(req.getContextPath() + "/admin/students");
                 return;
             }
-            if (!ValidationUtil.isUsername(username)) {
-                AdminServletSupport.flash(req, ValidationUtil.USERNAME_MESSAGE);
+            if (!ValidationUtil.isStudentId(username)) {
+                AdminServletSupport.flash(req, ValidationUtil.STUDENT_ID_MESSAGE);
+                resp.sendRedirect(req.getContextPath() + "/admin/students");
+                return;
+            }
+            if (!ValidationUtil.isPhone(phone)) {
+                AdminServletSupport.flash(req, ValidationUtil.PHONE_MESSAGE);
+                resp.sendRedirect(req.getContextPath() + "/admin/students");
+                return;
+            }
+            if (username.equals(phone)) {
+                AdminServletSupport.flash(req, "学号与手机号不能相同");
                 resp.sendRedirect(req.getContextPath() + "/admin/students");
                 return;
             }
@@ -93,9 +121,15 @@ public class AdminStudentServlet extends HttpServlet {
                 resp.sendRedirect(req.getContextPath() + "/admin/students");
                 return;
             }
+            if (studentDao.existsPhone(phone, id)) {
+                AdminServletSupport.flash(req, "手机号已被占用");
+                resp.sendRedirect(req.getContextPath() + "/admin/students");
+                return;
+            }
             User user = new User();
             user.setId(id);
             user.setUsername(username);
+            user.setPhone(phone);
             user.setRealName(realName);
             user.setDormNo(dormNo);
             user.setPassword(password);

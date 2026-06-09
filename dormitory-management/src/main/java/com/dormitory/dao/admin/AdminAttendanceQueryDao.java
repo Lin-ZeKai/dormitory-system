@@ -4,6 +4,7 @@ import com.dormitory.entity.Attendance;
 import com.dormitory.entity.StudentAttendanceOverview;
 import com.dormitory.entity.User;
 import com.dormitory.util.DBUtil;
+import com.dormitory.util.DbSchemaUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -73,14 +74,17 @@ public class AdminAttendanceQueryDao {
         PreparedStatement ps = null;
         ResultSet rs = null;
         List<StudentAttendanceOverview> list = new ArrayList<StudentAttendanceOverview>();
-        String sql = "SELECT u.id, u.username, u.real_name, u.dorm_no, "
-                + "a.check_time, a.status "
-                + "FROM t_user u "
-                + "LEFT JOIN t_attendance a ON u.id = a.user_id AND a.check_date = ? "
-                + "WHERE u.role = 'student' "
-                + "ORDER BY u.username";
         try {
             conn = DBUtil.getConnection();
+            boolean withPhone = DbSchemaUtil.isUserPhoneColumnAvailable(conn);
+            String userColumns = withPhone
+                    ? "u.id, u.username, u.phone, u.real_name, u.dorm_no"
+                    : "u.id, u.username, u.real_name, u.dorm_no";
+            String sql = "SELECT " + userColumns + ", a.check_time, a.status "
+                    + "FROM t_user u "
+                    + "LEFT JOIN t_attendance a ON u.id = a.user_id AND a.check_date = ? "
+                    + "WHERE u.role = 'student' "
+                    + "ORDER BY u.username";
             ps = conn.prepareStatement(sql);
             ps.setString(1, checkDate);
             rs = ps.executeQuery();
@@ -88,6 +92,9 @@ public class AdminAttendanceQueryDao {
                 StudentAttendanceOverview row = new StudentAttendanceOverview();
                 row.setUserId(rs.getInt("id"));
                 row.setUsername(rs.getString("username"));
+                if (withPhone) {
+                    row.setPhone(rs.getString("phone"));
+                }
                 row.setRealName(rs.getString("real_name"));
                 row.setDormNo(rs.getString("dorm_no"));
                 row.setCheckTime(rs.getTimestamp("check_time"));

@@ -45,9 +45,12 @@
                     <input type="text" tabindex="-1" autocomplete="username" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
                     <input type="password" tabindex="-1" autocomplete="current-password" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
                     <div class="form-group">
-                        <label>学号/手机号 <span class="required">*</span></label>
-                        <input type="text" name="username" class="form-control" placeholder="14位学号或11位手机号" required maxlength="14" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');">
-                        <small class="form-hint">学校规定学号为14位数字，也可使用手机号作为登录账号</small>
+                        <label>学号 <span class="required">*</span></label>
+                        <input type="text" name="username" class="form-control" placeholder="14位学号" maxlength="14" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');">
+                    </div>
+                    <div class="form-group">
+                        <label>手机号 <span class="required">*</span></label>
+                        <input type="text" name="phone" class="form-control" placeholder="11位手机号" maxlength="11" inputmode="numeric" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
                     </div>
                     <div class="form-group">
                         <label>密码 <span class="required">*</span></label>
@@ -70,14 +73,15 @@
                 <div class="data-panel-title">学生列表</div>
                 <div class="table-wrap">
                     <table>
-                        <thead><tr><th>学号</th><th>姓名</th><th>宿舍号</th><th>注册时间</th><th>操作</th></tr></thead>
+                        <thead><tr><th>学号</th><th>手机号</th><th>姓名</th><th>宿舍号</th><th>注册时间</th><th>操作</th></tr></thead>
                         <tbody>
                         <% if (studentList == null || studentList.isEmpty()) { %>
-                        <tr><td colspan="5">暂无学生数据</td></tr>
+                        <tr><td colspan="6">暂无学生数据</td></tr>
                         <% } else {
                             for (User s : studentList) { %>
                         <tr>
                             <td><%= s.getUsername() %></td>
+                            <td><%= s.getPhone() != null && !s.getPhone().isEmpty() ? s.getPhone() : "-" %></td>
                             <td><%= s.getRealName() %></td>
                             <td><%= s.getDormNo() != null ? s.getDormNo() : "-" %></td>
                             <td><%= s.getCreateTime() != null ? sdf.format(s.getCreateTime()) : "-" %></td>
@@ -85,6 +89,7 @@
                                 <button type="button" class="btn btn-outline btn-sm edit-student-btn"
                                         data-id="<%= s.getId() %>"
                                         data-username="<%= s.getUsername() %>"
+                                        data-phone="<%= s.getPhone() != null ? s.getPhone() : "" %>"
                                         data-realname="<%= s.getRealName() %>"
                                         data-dormno="<%= s.getDormNo() != null ? s.getDormNo() : "" %>">修改</button>
                                 <button type="button" class="btn btn-outline btn-sm btn-delete delete-student-btn"
@@ -110,7 +115,8 @@
             <form action="<%= ctx %>/admin/students" method="post" id="editForm" autocomplete="off">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="id" id="editId">
-                <div class="form-group"><label>学号/手机号</label><input type="text" name="username" id="editUsername" class="form-control" placeholder="14位学号或11位手机号" required maxlength="14" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false"><small class="form-hint">14位学号或11位手机号</small></div>
+                <div class="form-group"><label>学号</label><input type="text" name="username" id="editUsername" class="form-control" placeholder="14位学号" maxlength="14" inputmode="numeric" autocomplete="off"></div>
+                <div class="form-group"><label>手机号</label><input type="text" name="phone" id="editPhone" class="form-control" placeholder="11位手机号" maxlength="11" inputmode="numeric" autocomplete="off"></div>
                 <div class="form-group"><label>真实姓名</label><input type="text" name="realName" id="editRealName" class="form-control" required autocomplete="off"></div>
                 <div class="form-group"><label>宿舍号</label><input type="text" name="dormNo" id="editDormNo" class="form-control" autocomplete="off"></div>
                 <div class="form-group"><label>新密码（留空则不修改）</label><input type="password" name="password" id="editPassword" class="form-control" autocomplete="new-password"></div>
@@ -151,13 +157,14 @@
     var addForm = document.querySelector('form input[name="action"][value="add"]');
     if (addForm) {
         addForm = addForm.closest('form');
-        DormValidation.bindUsernameForm(addForm, null, { live: false });
+        DormValidation.bindStudentAccountForm(addForm, { live: false });
         addForm.addEventListener('submit', function () {
             addForm.querySelector('input[name="username"]').removeAttribute('readonly');
+            addForm.querySelector('input[name="phone"]').removeAttribute('readonly');
             addForm.querySelector('input[name="password"]').removeAttribute('readonly');
         });
     }
-    DormValidation.bindUsernameForm(document.getElementById('editForm'), null, { live: false });
+    DormValidation.bindStudentAccountForm(document.getElementById('editForm'), { live: false });
 
     function bindModal(modal, openFn, closeBtn, cancelBtn) {
         function close() { modal.classList.remove('show'); document.body.style.overflow = ''; }
@@ -173,9 +180,11 @@
         btn.addEventListener('click', function () {
             document.getElementById('editId').value = btn.getAttribute('data-id');
             document.getElementById('editUsername').value = btn.getAttribute('data-username');
+            document.getElementById('editPhone').value = btn.getAttribute('data-phone');
             document.getElementById('editRealName').value = btn.getAttribute('data-realname');
             document.getElementById('editDormNo').value = btn.getAttribute('data-dormno');
             DormValidation.clearFieldError(document.getElementById('editUsername'));
+            DormValidation.clearFieldError(document.getElementById('editPhone'));
             editModal.classList.add('show');
             document.body.style.overflow = 'hidden';
         });

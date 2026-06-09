@@ -13,8 +13,10 @@ public final class ValidationUtil {
     /** 中国大陆 11 位手机号 */
     public static final Pattern PHONE = Pattern.compile("^1[3-9]\\d{9}$");
 
-    public static final String USERNAME_MESSAGE = "学号须为14位数字，或使用11位手机号";
+    public static final String STUDENT_ID_MESSAGE = "学号须为14位数字";
     public static final String PHONE_MESSAGE = "请输入正确的11位手机号";
+    /** @deprecated 注册已拆分为学号+手机号，登录仍可用学号或手机号 */
+    public static final String USERNAME_MESSAGE = STUDENT_ID_MESSAGE;
 
     private ValidationUtil() {
     }

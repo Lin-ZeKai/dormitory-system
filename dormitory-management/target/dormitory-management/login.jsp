@@ -21,7 +21,8 @@
     <form action="<%= ctx %>/login" method="post">
         <div class="form-group">
             <label for="username">学号/手机号</label>
-            <input type="text" id="username" name="username" placeholder="14位学号或11位手机号" required>
+            <input type="text" id="username" name="username" placeholder="输入学号或手机号" required>
+            <small style="display:block;margin-top:6px;font-size:12px;color:#909399;">注册时的 14 位学号或 11 位手机号均可登录</small>
         </div>
         <div class="form-group">
             <label for="password">密码</label>

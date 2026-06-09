@@ -17,8 +17,10 @@ public class User implements Serializable {
 
     /** 用户主键 ID */
     private Integer id;
-    /** 登录用户名，唯一 */
+    /** 登录用户名（学号），唯一 */
     private String username;
+    /** 手机号，唯一，可用于登录 */
+    private String phone;
     /** 登录密码（骨架阶段为明文，后续可改为加密存储） */
     private String password;
     /** 真实姓名，用于页面展示 */
@@ -56,6 +58,14 @@ public class User implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getPassword() {

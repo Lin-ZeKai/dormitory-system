@@ -9,11 +9,13 @@ USE dormitory_db;
 CREATE TABLE IF NOT EXISTS t_user (
     id          INT PRIMARY KEY AUTO_INCREMENT,
     username    VARCHAR(50)  NOT NULL UNIQUE,
+    phone       VARCHAR(20)  DEFAULT NULL COMMENT '手机号',
     password    VARCHAR(100) NOT NULL,
     real_name   VARCHAR(50)  DEFAULT NULL,
     dorm_no     VARCHAR(50)  DEFAULT NULL COMMENT '宿舍号',
     role        VARCHAR(20)  NOT NULL DEFAULT 'student' COMMENT 'student/admin',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_user_phone (phone)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 考勤签到表
@@ -57,8 +59,8 @@ INSERT INTO t_user (username, password, real_name, dorm_no, role)
 VALUES ('admin', '123456', '管理员', NULL, 'admin')
 ON DUPLICATE KEY UPDATE username = username;
 
-INSERT INTO t_user (username, password, real_name, dorm_no, role)
-VALUES ('2021001', '123456', '张三', '3号楼302', 'student')
+INSERT INTO t_user (username, phone, password, real_name, dorm_no, role)
+VALUES ('2021001', '13800002021', '123456', '张三', '3号楼302', 'student')
 ON DUPLICATE KEY UPDATE username = username;
 
 INSERT INTO t_announcement (title, content, publisher, is_important)

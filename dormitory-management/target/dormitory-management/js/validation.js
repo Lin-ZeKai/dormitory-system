@@ -71,6 +71,35 @@ var DormValidation = (function () {
         return '手机号格式不正确';
     }
 
+    function getStudentIdErrorMessage(v) {
+        var t = trim(v);
+        if (!t) {
+            return '请输入14位学号';
+        }
+        if (isStudentId(t)) {
+            return null;
+        }
+        if (t.length < 14) {
+            return '学号须为 14 位数字，当前已输入 ' + t.length + ' 位';
+        }
+        return '学号须为 14 位数字';
+    }
+
+    function validateStudentIdField(input, forceShow) {
+        if (!input) {
+            return true;
+        }
+        var msg = getStudentIdErrorMessage(input.value);
+        if (msg) {
+            if (forceShow) {
+                showFieldError(input, msg);
+            }
+            return false;
+        }
+        clearFieldError(input);
+        return true;
+    }
+
     function notifyError(message) {
         if (window.Message && typeof window.Message.error === 'function') {
             window.Message.error(message);
@@ -191,6 +220,24 @@ var DormValidation = (function () {
         });
     }
 
+    function setupStudentIdInput(input, options) {
+        options = options || {};
+        if (!input) {
+            return;
+        }
+        input.setAttribute('maxlength', '14');
+        input.setAttribute('inputmode', 'numeric');
+        if (!input.getAttribute('placeholder')) {
+            input.setAttribute('placeholder', '14位学号');
+        }
+        digitsOnly(input);
+        if (options.live === false) {
+            bindSubmitOnlyClear(input, function (v) {
+                return !getStudentIdErrorMessage(v);
+            });
+        }
+    }
+
     function setupUsernameInput(input, options) {
         options = options || {};
         if (!input) {
@@ -231,6 +278,44 @@ var DormValidation = (function () {
         }
     }
 
+    function bindStudentAccountForm(form, options) {
+        options = options || {};
+        if (!form) {
+            return;
+        }
+        form.setAttribute('novalidate', 'novalidate');
+        form.setAttribute('autocomplete', 'off');
+        var studentSelector = options.studentField
+            ? ('input[name="' + options.studentField + '"]')
+            : 'input[name="username"]';
+        var studentInput = form.querySelector(studentSelector);
+        var phoneInput = form.querySelector('input[name="phone"]');
+        setupStudentIdInput(studentInput, options);
+        setupPhoneInput(phoneInput, options);
+        form.addEventListener('submit', function (e) {
+            var studentOk = validateStudentIdField(studentInput, true);
+            if (!studentOk) {
+                e.preventDefault();
+                studentInput.focus();
+                return;
+            }
+            if (!validatePhoneField(phoneInput, true)) {
+                e.preventDefault();
+                phoneInput.focus();
+                return;
+            }
+            if (trim(studentInput.value) === trim(phoneInput.value)) {
+                e.preventDefault();
+                Message.error('学号与手机号不能相同');
+                studentInput.focus();
+            }
+        });
+    }
+
+    function bindRegisterForm(form, options) {
+        bindStudentAccountForm(form, options);
+    }
+
     function bindUsernameForm(form, selector, options) {
         options = options || {};
         if (!form) {
@@ -267,14 +352,19 @@ var DormValidation = (function () {
         isStudentId: isStudentId,
         isPhone: isPhone,
         isUsername: isUsername,
+        getStudentIdErrorMessage: getStudentIdErrorMessage,
         getUsernameErrorMessage: getUsernameErrorMessage,
         getPhoneErrorMessage: getPhoneErrorMessage,
         showFieldError: showFieldError,
         clearFieldError: clearFieldError,
+        validateStudentIdField: validateStudentIdField,
         validateUsernameField: validateUsernameField,
         validatePhoneField: validatePhoneField,
+        setupStudentIdInput: setupStudentIdInput,
         setupUsernameInput: setupUsernameInput,
         setupPhoneInput: setupPhoneInput,
+        bindRegisterForm: bindRegisterForm,
+        bindStudentAccountForm: bindStudentAccountForm,
         bindUsernameForm: bindUsernameForm,
         bindPhoneForm: bindPhoneForm
     };
