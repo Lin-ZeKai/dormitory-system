@@ -60,6 +60,20 @@
 - 左侧菜单 + 右侧内容区
 - 每页底部预留 **数据展示扩展区**（虚线框），便于后续接入导出、报表等
 
-## 可选后续（需改已有文件）
+## 整合说明（已更新）
 
-若希望旧版 `/admin/home` 也显示完整菜单，可将 `admin/index.jsp` 中的 `admin-sidebar.jsp` 替换为 `admin-shell-sidebar.jsp`（本次未改动）。
+管理员端已整合为**统一左侧菜单**，登录后从 `/admin/home` 即可进入全部功能。
+
+| 菜单 | 地址 |
+|------|------|
+| 数据概览 | `/admin/home` |
+| 学生管理 | `/admin/students` |
+| 考勤管理 | `/admin/attendance` |
+| 请假审核 | `/admin/leaves` |
+| 公告管理 | `/admin/announcements` |
+| 统计中心 | `/admin/stats` |
+
+- 管理员访问 `/announcements` 会自动跳转到 `/admin/announcements`
+- 学生仍使用 `/announcements` 查看公告
+
+**部署后请 Rebuild Project 并重启 Tomcat。**

@@ -25,7 +25,7 @@
 </head>
 <body>
 <div class="layout">
-    <%@ include file="/includes/admin-shell-sidebar.jsp" %>
+    <%@ include file="/includes/admin-sidebar.jsp" %>
     <div class="main-wrapper">
         <header class="topbar">
             <span class="topbar-title">学生管理</span>
@@ -93,7 +93,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="reserved-area">数据展示扩展区（可接入导出 Excel、批量导入等功能）</div>
+                <!-- <div class="reserved-area">数据展示扩展区（可接入导出 Excel、批量导入等功能）</div> -->
             </div>
         </main>
     </div>

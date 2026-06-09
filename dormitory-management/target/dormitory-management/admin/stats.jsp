@@ -31,7 +31,7 @@
 </head>
 <body>
 <div class="layout">
-    <%@ include file="/includes/admin-shell-sidebar.jsp" %>
+    <%@ include file="/includes/admin-sidebar.jsp" %>
     <div class="main-wrapper">
         <header class="topbar">
             <span class="topbar-title">统计中心</span>

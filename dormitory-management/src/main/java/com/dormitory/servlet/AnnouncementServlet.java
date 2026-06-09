@@ -25,8 +25,12 @@ public class AnnouncementServlet extends HttpServlet {
             WebUtil.redirectLogin(req, resp);
             return;
         }
+        if (WebUtil.isAdmin(user)) {
+            resp.sendRedirect(req.getContextPath() + "/admin/announcements");
+            return;
+        }
         req.setAttribute("announcements", announcementDao.findAll());
-        req.setAttribute("isAdmin", WebUtil.isAdmin(user));
+        req.setAttribute("isAdmin", Boolean.FALSE);
         req.getRequestDispatcher("/announcements.jsp").forward(req, resp);
     }
 
@@ -50,8 +54,8 @@ public class AnnouncementServlet extends HttpServlet {
         String important = req.getParameter("important");
 
         if (title == null || title.trim().isEmpty() || content == null || content.trim().isEmpty()) {
-            req.setAttribute("errorMsg", "公告标题和内容不能为空");
-            doGet(req, resp);
+            req.getSession().setAttribute("flashMsg", "公告标题和内容不能为空");
+            resp.sendRedirect(req.getContextPath() + "/admin/announcements");
             return;
         }
 
@@ -63,7 +67,7 @@ public class AnnouncementServlet extends HttpServlet {
         announcementDao.insert(announcement);
 
         req.getSession().setAttribute("flashMsg", "公告发布成功");
-        resp.sendRedirect(req.getContextPath() + "/announcements");
+        resp.sendRedirect(req.getContextPath() + "/admin/announcements");
     }
 
     private void handleDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -77,6 +81,6 @@ public class AnnouncementServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             req.getSession().setAttribute("flashMsg", "删除参数无效");
         }
-        resp.sendRedirect(req.getContextPath() + "/announcements");
+        resp.sendRedirect(req.getContextPath() + "/admin/announcements");
     }
 }

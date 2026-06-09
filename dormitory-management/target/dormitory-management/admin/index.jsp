@@ -30,6 +30,7 @@
     <meta charset="UTF-8">
     <title>管理员首页 - 宿舍考勤与管理系统</title>
     <link rel="stylesheet" href="<%= ctx %>/css/common.css">
+    <link rel="stylesheet" href="<%= ctx %>/css/admin-pages.css">
 </head>
 <body>
 <div class="layout">
@@ -47,6 +48,13 @@
                 <div class="stat-card"><div class="label">今日已签到</div><div class="value"><%= todayCheckedIn %></div></div>
                 <div class="stat-card"><div class="label">今日缺勤</div><div class="value"><%= todayAbsent %></div></div>
                 <div class="stat-card"><div class="label">待审请假</div><div class="value"><%= pendingLeave %></div></div>
+            </div>
+            <div class="admin-quick-nav">
+                <a href="<%= ctx %>/admin/students" class="quick-nav-card"><strong>学生管理</strong><span>添加、修改、删除学生</span></a>
+                <a href="<%= ctx %>/admin/attendance" class="quick-nav-card"><strong>考勤管理</strong><span>查看签到记录与筛选</span></a>
+                <a href="<%= ctx %>/admin/leaves" class="quick-nav-card"><strong>请假审核</strong><span>通过或驳回请假申请</span></a>
+                <a href="<%= ctx %>/admin/announcements" class="quick-nav-card"><strong>公告管理</strong><span>发布、修改、删除公告</span></a>
+                <a href="<%= ctx %>/admin/stats" class="quick-nav-card"><strong>统计中心</strong><span>图表数据分析</span></a>
             </div>
             <div class="card leave-tabs-card">
                 <div class="tab-bar">
