@@ -20,7 +20,11 @@
             </div>
         </div>
         <div class="checkin-reminder-actions">
+            <% String currentPath = request.getRequestURI().substring(request.getContextPath().length());
+               boolean onCheckinPage = "/student/checkin".equals(currentPath); %>
+            <% if (!onCheckinPage) { %>
             <a href="<%= request.getContextPath() %>/student/checkin" class="btn btn-primary btn-sm">立即签到</a>
+            <% } %>
             <form action="<%= request.getContextPath() %>/student/checkin-reminder" method="post">
                 <input type="hidden" name="action" value="dismiss">
                 <input type="hidden" name="id" value="<%= reminder.getId() %>">

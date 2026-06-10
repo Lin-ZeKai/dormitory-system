@@ -80,8 +80,6 @@
 
         <main class="main-content">
 
-            <%@ include file="/includes/checkin-reminder-banner.jsp" %>
-
             <% if (request.getAttribute("successMsg") != null) { %>
 
             <div class="alert alert-info"><%= request.getAttribute("successMsg") %></div>

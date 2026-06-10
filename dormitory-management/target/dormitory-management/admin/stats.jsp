@@ -55,7 +55,7 @@
                 <div class="chart-grid">
                     <div class="chart-box">
                         <h4>近 7 日签到人数趋势</h4>
-                        // id 传给下面的 js 使用
+                        <!-- id 传给下面的 js 使用 -->
                         <div class="chart-canvas-wrap"><canvas id="checkinTrendChart"></canvas></div>
                     </div>
                     <div class="chart-box">
