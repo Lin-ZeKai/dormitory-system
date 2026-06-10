@@ -1,6 +1,7 @@
 package com.dormitory.servlet;
 
 import com.dormitory.dao.AttendanceDao;
+import com.dormitory.dao.CheckinReminderDao;
 import com.dormitory.entity.Attendance;
 import com.dormitory.entity.User;
 import com.dormitory.util.CheckinTimeUtil;
@@ -18,6 +19,7 @@ import java.util.Date;
 public class CheckinServlet extends HttpServlet {
 
     private final AttendanceDao attendanceDao = new AttendanceDao();
+    private final CheckinReminderDao reminderDao = new CheckinReminderDao();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -64,6 +66,10 @@ public class CheckinServlet extends HttpServlet {
 
         String status = CheckinTimeUtil.resolveStatus(now);
         attendanceDao.checkIn(user.getId(), now, status);
+        try {
+            reminderDao.markAllUnreadByUserId(user.getId());
+        } catch (RuntimeException ignored) {
+        }
         req.setAttribute("successMsg", "签到成功");
         doGet(req, resp);
     }

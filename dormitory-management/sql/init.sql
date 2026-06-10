@@ -66,3 +66,16 @@ ON DUPLICATE KEY UPDATE username = username;
 INSERT INTO t_announcement (title, content, publisher, is_important)
 SELECT '宿舍考勤系统上线公告', '宿舍考勤与管理系统正式上线，请全体住宿同学每日按时完成系统签到。', '信息中心', 0
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM t_announcement LIMIT 1);
+
+-- 签到提醒表
+CREATE TABLE IF NOT EXISTS t_checkin_reminder (
+    id          INT PRIMARY KEY AUTO_INCREMENT,
+    user_id     INT NOT NULL COMMENT '被提醒学生',
+    remind_date DATE NOT NULL COMMENT '提醒对应的考勤日期',
+    message     VARCHAR(500) NOT NULL COMMENT '提醒内容',
+    admin_name  VARCHAR(50) DEFAULT NULL COMMENT '发送提醒的管理员',
+    is_read     TINYINT NOT NULL DEFAULT 0 COMMENT '0未读 1已读',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_user_remind_date (user_id, remind_date),
+    FOREIGN KEY (user_id) REFERENCES t_user(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

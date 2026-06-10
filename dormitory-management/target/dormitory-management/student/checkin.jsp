@@ -7,15 +7,15 @@
 <%@ page import="com.dormitory.util.CheckinTimeUtil" %>
 
 <%
-
     User loginUser = (User) session.getAttribute("loginUser");
 
     if (loginUser == null) {
-
         response.sendRedirect(request.getContextPath() + "/login.jsp");
-
         return;
-
+    }
+    if (request.getAttribute("inCheckinWindow") == null) {
+        response.sendRedirect(request.getContextPath() + "/student/checkin");
+        return;
     }
 
     String ctx = request.getContextPath();
@@ -79,6 +79,8 @@
         </header>
 
         <main class="main-content">
+
+            <%@ include file="/includes/checkin-reminder-banner.jsp" %>
 
             <% if (request.getAttribute("successMsg") != null) { %>
 

@@ -575,6 +575,90 @@ textarea.form-control {
     border: 1px solid #fde68a;
 }
 
+.checkin-reminder-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    margin-bottom: 0;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border: 1px solid #fdba74;
+    box-shadow: 0 4px 14px rgba(249, 115, 22, 0.12);
+}
+
+.checkin-reminder-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.checkin-reminder-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f97316;
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.checkin-reminder-title {
+    color: #c2410c;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.checkin-reminder-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.checkin-reminder-content p {
+    margin: 0 0 6px;
+    color: #9a3412;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.checkin-reminder-meta {
+    font-size: 12px;
+    color: #b45309;
+}
+
+.checkin-reminder-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.checkin-reminder-actions form {
+    margin: 0;
+}
+
+.checkin-reminder-inline {
+    margin: 0 0 20px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #fff7ed;
+    border: 1px dashed #fb923c;
+    color: #9a3412;
+    font-size: 13px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.checkin-reminder-inline strong {
+    color: #c2410c;
+}
+
 .alert-toast {
     transition: opacity 0.35s ease, transform 0.35s ease;
 }

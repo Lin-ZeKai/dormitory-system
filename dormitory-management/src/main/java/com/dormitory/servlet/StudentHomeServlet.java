@@ -2,9 +2,11 @@ package com.dormitory.servlet;
 
 import com.dormitory.dao.AnnouncementDao;
 import com.dormitory.dao.AttendanceDao;
+import com.dormitory.dao.CheckinReminderDao;
 import com.dormitory.dao.LeaveDao;
 import com.dormitory.entity.Announcement;
 import com.dormitory.entity.Attendance;
+import com.dormitory.entity.CheckinReminder;
 import com.dormitory.entity.User;
 import com.dormitory.util.WebUtil;
 
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @WebServlet(name = "StudentHomeServlet", urlPatterns = "/student/home")
@@ -22,6 +25,7 @@ public class StudentHomeServlet extends HttpServlet {
     private final AttendanceDao attendanceDao = new AttendanceDao();
     private final LeaveDao leaveDao = new LeaveDao();
     private final AnnouncementDao announcementDao = new AnnouncementDao();
+    private final CheckinReminderDao reminderDao = new CheckinReminderDao();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -47,6 +51,15 @@ public class StudentHomeServlet extends HttpServlet {
         req.setAttribute("attendanceRate", attendanceRate);
         req.setAttribute("todayAttendance", today);
         req.setAttribute("latestAnnouncements", latestAnnouncements);
+        if (today != null) {
+            req.setAttribute("checkinReminders", Collections.<CheckinReminder>emptyList());
+        } else {
+            try {
+                req.setAttribute("checkinReminders", reminderDao.findUnreadByUserId(user.getId()));
+            } catch (RuntimeException e) {
+                req.setAttribute("checkinReminders", Collections.<CheckinReminder>emptyList());
+            }
+        }
 
         req.getRequestDispatcher("/student/index.jsp").forward(req, resp);
     }

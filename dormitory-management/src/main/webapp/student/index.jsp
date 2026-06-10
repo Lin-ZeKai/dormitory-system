@@ -10,6 +10,10 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
+    if (request.getAttribute("monthlyCount") == null) {
+        response.sendRedirect(request.getContextPath() + "/student/home");
+        return;
+    }
     String ctx = request.getContextPath();
     request.setAttribute("activeMenu", "home");
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -40,6 +44,7 @@
             </div>
         </header>
         <main class="main-content">
+            <%@ include file="/includes/checkin-reminder-banner.jsp" %>
             <div class="page-header">
                 <h2>欢迎回来，<%= loginUser.getRealName() %></h2>
                 <% if (todayAttendance != null) { %>

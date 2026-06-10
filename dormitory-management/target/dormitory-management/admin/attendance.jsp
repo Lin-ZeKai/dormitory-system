@@ -3,6 +3,7 @@
 <%@ page import="com.dormitory.entity.Attendance" %>
 <%@ page import="com.dormitory.entity.StudentAttendanceOverview" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Set" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%
     User loginUser = (User) session.getAttribute("loginUser");
@@ -22,6 +23,12 @@
     Integer uncheckedCount = (Integer) request.getAttribute("overviewUncheckedCount");
     if (checkedCount == null) checkedCount = 0;
     if (uncheckedCount == null) uncheckedCount = 0;
+    String flashMsg = (String) session.getAttribute("flashMsg");
+    if (flashMsg != null) session.removeAttribute("flashMsg");
+    Set<Integer> remindedUserIds = (Set<Integer>) request.getAttribute("remindedUserIds");
+    if (remindedUserIds == null) remindedUserIds = java.util.Collections.emptySet();
+    Integer unremindedCount = (Integer) request.getAttribute("unremindedCount");
+    if (unremindedCount == null) unremindedCount = 0;
     SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm:ss");
 %>
@@ -43,6 +50,7 @@
             <div class="topbar-user"><span><%= loginUser.getRealName() %></span><a href="<%= ctx %>/logout">退出登录</a></div>
         </header>
         <main class="main-content">
+            <% if (flashMsg != null) { %><div class="alert alert-info alert-toast" id="flashToast"><%= flashMsg %></div><% } %>
             <div class="admin-page-header">
                 <h2>签到记录管理</h2>
                 <p>查看签到明细，或按日期查看全部学生的考勤状态</p>
@@ -106,7 +114,18 @@
             </div>
 
             <div class="data-panel view-panel" id="statusPanel">
-                <div class="data-panel-title">学生考勤状态<% if (overviewDate != null) { %>（<%= overviewDate %>）<% } %></div>
+                <div class="data-panel-title-row">
+                    <div class="data-panel-title">学生考勤状态<% if (overviewDate != null) { %>（<%= overviewDate %>）<% } %></div>
+                    <% if (unremindedCount > 0 && overviewDate != null) { %>
+                    <form action="<%= ctx %>/admin/attendance" method="post" class="remind-all-form">
+                        <input type="hidden" name="action" value="remindAll">
+                        <input type="hidden" name="checkDate" value="<%= overviewDate %>">
+                        <button type="submit" class="btn btn-primary btn-sm" id="remindAllBtn">一键提醒未签到（<%= unremindedCount %>）</button>
+                    </form>
+                    <% } else if (uncheckedCount > 0 && overviewDate != null) { %>
+                    <span class="remind-done-tag">未签到学生已全部提醒</span>
+                    <% } %>
+                </div>
                 <div class="status-summary">
                     <div class="status-summary-item info"><strong><%= statusOverviewList != null ? statusOverviewList.size() : 0 %></strong>学生总数</div>
                     <div class="status-summary-item success"><strong><%= checkedCount %></strong>已签到</div>
@@ -122,11 +141,12 @@
                             <th>宿舍号</th>
                             <th>签到时间</th>
                             <th>考勤状态</th>
+                            <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
                         <% if (statusOverviewList == null || statusOverviewList.isEmpty()) { %>
-                        <tr><td colspan="6">暂无学生数据</td></tr>
+                        <tr><td colspan="7">暂无学生数据</td></tr>
                         <% } else {
                             for (StudentAttendanceOverview row : statusOverviewList) {
                                 String statusName;
@@ -151,6 +171,24 @@
                             <td><%= row.getDormNo() != null && !row.getDormNo().isEmpty() ? row.getDormNo() : "-" %></td>
                             <td><%= row.getCheckTime() != null ? timeFmt.format(row.getCheckTime()) : "-" %></td>
                             <td><span class="badge <%= badge %>"><%= statusName %></span></td>
+                            <td class="action-group">
+                                <% if (!row.isCheckedIn() && overviewDate != null) {
+                                    boolean alreadyReminded = row.getUserId() != null
+                                            && remindedUserIds.contains(row.getUserId());
+                                    if (alreadyReminded) { %>
+                                <span class="remind-done-tag">已提醒</span>
+                                    <% } else { %>
+                                <form action="<%= ctx %>/admin/attendance" method="post" class="remind-one-form">
+                                    <input type="hidden" name="action" value="remindOne">
+                                    <input type="hidden" name="userId" value="<%= row.getUserId() %>">
+                                    <input type="hidden" name="checkDate" value="<%= overviewDate %>">
+                                    <button type="submit" class="btn btn-outline btn-sm btn-remind">提醒签到</button>
+                                </form>
+                                    <% }
+                                   } else { %>
+                                -
+                                <% } %>
+                            </td>
                         </tr>
                         <%   }
                            } %>
@@ -161,8 +199,32 @@
         </main>
     </div>
 </div>
+<script src="<%= ctx %>/js/message.js"></script>
 <script>
 (function () {
+    var flash = document.getElementById('flashToast');
+    var flashText = flash ? flash.textContent : '';
+    if (flash) {
+        if (window.Message) {
+            Message.success(flashText);
+        }
+        setTimeout(function () { flash.classList.add('hide'); setTimeout(function () { flash.remove(); }, 350); }, 4000);
+    }
+
+    function activateStatusPanel() {
+        var statusTab = document.querySelector('.view-tab[data-target="statusPanel"]');
+        var statusPanel = document.getElementById('statusPanel');
+        if (!statusTab || !statusPanel) return;
+        document.querySelectorAll('.view-tab').forEach(function (t) { t.classList.remove('active'); });
+        document.querySelectorAll('.view-panel').forEach(function (p) { p.classList.remove('active'); });
+        statusTab.classList.add('active');
+        statusPanel.classList.add('active');
+    }
+
+    if (window.location.hash === '#statusPanel' || window.location.search.indexOf('checkDate=') >= 0) {
+        activateStatusPanel();
+    }
+
     var tabs = document.querySelectorAll('.view-tab');
     var panels = document.querySelectorAll('.view-panel');
     tabs.forEach(function (tab) {
@@ -173,6 +235,77 @@
             tab.classList.add('active');
             var panel = document.getElementById(targetId);
             if (panel) panel.classList.add('active');
+        });
+    });
+
+    document.querySelectorAll('.remind-one-form, .remind-all-form').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var btn = form.querySelector('button[type="submit"]');
+            var oldText = btn ? btn.textContent : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '发送中...';
+            }
+
+            var body = new URLSearchParams(new FormData(form));
+            body.append('format', 'json');
+
+            fetch(form.getAttribute('action'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                body: body.toString()
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data.ok) {
+                        if (window.Message) Message.success(data.msg);
+                        if (form.classList.contains('remind-one-form')) {
+                            var cell = form.closest('td');
+                            if (cell) cell.innerHTML = '<span class="remind-done-tag">已提醒</span>';
+                        } else if (form.classList.contains('remind-all-form')) {
+                            document.querySelectorAll('.remind-one-form').forEach(function (oneForm) {
+                                var cell = oneForm.closest('td');
+                                if (cell) cell.innerHTML = '<span class="remind-done-tag">已提醒</span>';
+                            });
+                            var remindAllBtn = document.getElementById('remindAllBtn');
+                            if (remindAllBtn) {
+                                var formWrap = remindAllBtn.closest('form');
+                                if (formWrap && formWrap.parentNode) {
+                                    formWrap.parentNode.innerHTML = '<span class="remind-done-tag">未签到学生已全部提醒</span>';
+                                }
+                            }
+                        }
+                        var remindAllBtnCount = document.getElementById('remindAllBtn');
+                        if (remindAllBtnCount && form.classList.contains('remind-one-form')) {
+                            var left = document.querySelectorAll('.remind-one-form').length;
+                            if (left === 0) {
+                                var wrap = remindAllBtnCount.closest('.data-panel-title-row');
+                                if (wrap) {
+                                    var formEl = wrap.querySelector('.remind-all-form');
+                                    if (formEl && formEl.parentNode) {
+                                        formEl.parentNode.innerHTML = '<span class="remind-done-tag">未签到学生已全部提醒</span>';
+                                    }
+                                }
+                            } else {
+                                remindAllBtnCount.textContent = '一键提醒未签到（' + left + '）';
+                            }
+                        }
+                    } else if (window.Message) {
+                        Message.error(data.msg || '提醒发送失败');
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.textContent = oldText;
+                        }
+                    }
+                })
+                .catch(function () {
+                    if (window.Message) Message.error('网络异常，请重新部署后重试');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = oldText;
+                    }
+                });
         });
     });
 })();
